@@ -1,0 +1,143 @@
+ 
+Ser for meg å skille ut web-delen fra Polaric APRSD som en egen sak. Programbibliotek. 
+Skal kunne brukes til andre ting enn Polaric Server kartapp. 
+
+
+Rammeverk for å lage server-applikasjoner med REST-API og websockets. 
+Applikasjoner kan skrives i Java eller Kotlin. 
+Bygger på Javalin og Pac4J. 
+Fokus på sikkerhet. 
+
+
+Autentisering
+-------------
+
+Arctic-HMAC: SHA256-Hmac autentisering for sesjoner. Sesjonsnøkkel med begrenset varighet. 
+    Autentisere maskiner/enheter basert på felles hemmelighet. 
+    Det er en relativt lettvekts metode som kan brukes på IoT enheter. 
+
+Pålogging med brukernavn/passord og andre metoder som støttes av  Pac4J. Vellykket pålogging
+genererer en sesjonsnøkkel med en avgrenset gyldighetstid. Nøkkelen returneres til klienter. 
+
+
+Autorisering
+------------
+    
+I utgangspunktet er det 3 enkle autoriseringsnivåer (1) Logged-on, (2) Operator, (3) Admin. 
+Det tilbys også støtte for full rollebasert autorisering. En bruker kan tilordnes en 
+primær rolle og en alternativ rolle som det er mulig å bytte til midlertidig etter behov. 
+En rolle kan tilordnes autoriseringsnivå 1 eller 2. Admin (superbruker) rettighet settes 
+separat or brukere. 
+
+Informasjon om brukerens identitet rolle og autoriseringer er tilgjengelig for applikasjons-
+programmerer. Det er opp til applikasjons designer å bestemme hvilke tilganger som gis 
+hvilke roller. 
+
+
+Lage REST API
+-------------
+
+Lett å lage applikasjoner med 'get', 'put', 'post', 'delete' operasjoner, eventuelt 'before' 
+og 'after' på URL filter. Full tilang til URL, headere, osv.. Bruk av JSON er støttet. 
+Her benyttes Javalin.
+    
+Meget lett å definere pr. URL hvilke autoriseringsnivå som skal få tilgang. Forespørsler
+som ikke har det angitte autoriseringsnivået blir avvist (403 Unauthorized).
+    
+    
+    
+    
+Websocket
+    Har i utgangspunktet en PUB-SUB tjeneste med rom. 
+    Rammeverk for å lage websocket-tjenester
+    Mulighet for autentisering (med Arctic-HMAC) og autorisering når klienter kobles opp mot websocket tjeneste(r)
+    
+Server-server kommunikasjon
+    Sette opp tjenestekategorier med delte nøkler
+    Arctic-HMAC autentisering
+    Støtte for REST API. 
+    Støtte for å etablere websocket-kommunikasjon (NodeWS - enkel protokoll)
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+Navn på produktet?
+------------------
+
+Arctic Server
+Polaric Server
+Arctic Web 
+Webcomp
+ArcticComp
+Javarctic
+FortiWeb
+Safelink
+IronGate
+Warden
+NimbusSec
+Aether
+IoSecure
+NimbusIO
+MiniMesh
+
+
+
+
+Navn med Arctic. Kan kanskje også gå med Polaric i stedet for Arctic. 
+---------------------------------------------------------------------
+
+
+1. ArcticLink
+Secure, minimal communication between clients/devices — REST & WebSocket "links."
+arcticlink.se is in use. Sorry. 
+
+
+2. ArcticWire
+Suggests a secure, invisible wire between server and IoT devices. Modern and sleek.
+
+3. ArcticMesh
+Great for networks of devices. Suggests structured, scalable communication.
+
+4. ArcticPulse
+Cool name that evokes real-time signals or heartbeat-like communication (ideal for WebSockets or IoT pinging).
+
+5. ArcticWave
+Captures the WebSocket data stream and REST call “waves.” Smooth and techy.
+
+6. ArcticFlow
+Suggests smooth, efficient flow of secure data. REST + WebSocket friendly.
+
+7. ArcticNest
+Lightweight, secure hub for connected devices — warm imagery against a cold backdrop.
+
+8. ArcticBridge
+Secure bridging between devices, services, and clients. Emphasizes interoperability.
+
+9. ArcticCore
+A foundational lightweight core for building secure connected apps.
+
+10. ArcticBeam
+Like a beam of secure data — fast, direct communication channel.
+
+
+    ArcticComm – plain but effective; "Comm" for communications.
+
+    ArcticSocket – very literal, good if the focus is more on WebSockets.
+
+    
+    
+    
+For å være dønn fucking ærlig. Det var kule navn og fristende å omdøpe selve Polaric-Server til noe a la dette. 
+
+ArcticWire, ArcticCore
+
+
+
+
