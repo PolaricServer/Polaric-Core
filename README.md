@@ -9,5 +9,5 @@ Polaric-aprsd is being split into two artifacts. This is a general framework for
 * It supports server-to-server communication (REST or Websocket). Authentication based on a shared secret. Suitable for IoT devices like e.g. Arctic tracker.
 * License is AGPL 3.0. 
 
-Work is in progress porting Polaric-Aprsd to this framework. More info will come. Interested? Stay tuned. Feel free to test or modify it. 
+Work is in progress porting the rest of Polaric-Aprsd to this framework. More info will come. Interested? Stay tuned. Feel free to test or modify it. 
 
