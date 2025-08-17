@@ -40,13 +40,16 @@ public class AuthInfo {
     public static final int USERSES_EXPIRE = 60 * 24 * 7;
     
     
-    /* User session info (info associated with user login sessions) wrapper with counter */
+    /* 
+     * User session info (info associated with user login sessions) wrapper with counter 
+     * Can be subclassed by application to add application-specific attributes
+     */
     public static class UserSessionInfo {
         public String userid;
-        public long expire = 0;
-        public int cnt = 0;
-        public int increment() {return ++cnt;}
-        public int decrement() {return --cnt;}
+        private long expire = 0;
+        private int cnt = 0;
+        private int increment() {return ++cnt;}
+        private int decrement() {return --cnt;}
         
         public UserSessionInfo(String uid) {userid=uid;}
     }
@@ -77,19 +80,26 @@ public class AuthInfo {
     
     
     /*
-     * Allow user to define a function (possibly lambda) that creates a user-session-info object
+     * Allow application program to define a function (possibly lambda) that creates a 
+     * user-session-info object as well as a function to clean up when closing a session.
      */
      
     public interface SesCreateFunc {
         public UserSessionInfo create(String userid);
     }
+    public interface SesCloseFunc {
+        public void close(UserSessionInfo ses);
+    }
     
     private static SesCreateFunc _usersesfactory; 
-    
+    private static SesCloseFunc _usersesclose; 
+     
     public static void setUserSesFactory(SesCreateFunc f) {
         _usersesfactory = f;
     }
-    
+    public static void setUserSesClose(SesCloseFunc f) {
+        _usersesclose = f;
+    }
     
     
     
@@ -98,7 +108,7 @@ public class AuthInfo {
      * Used when users log in or log out. A session (as defined here) is shared between 
      * logins by the same user-id. A session is opened at the first login and closed
      * after the last logout. After a short delay. After a session is closed it is kept 
-     * for some time before expired and removed. 
+     * for some time before expired and removed. Default: 1 week. 
      * 
      * Callback-functions on the webserver are called when sessions are  
      * opened and closed. These can be specified (as lambda-functions) by the 
@@ -139,15 +149,17 @@ public class AuthInfo {
            
         /* 
          * Called when client session is closed. 
+         * FIXME: This does not happen when just logging out. 
          */
         ws.onCloseSes( (c)-> {
             AuthInfo a = c.authInfo();
+            System.out.println("**** onCloseSes: "+a);
             if (a==null || a.userid == null)
                 return;
                 
             a.userses = a.getUserses(); 
             if (a.userses != null) {
-                if (a.userses.decrement() == 0) { 
+                if (a.userses.decrement() <= 0) { 
                     /* 
                      * If last session (for user) is closed, schedule for removing the user 
                      * and expiring the user session - in 30 seconds. 
@@ -178,6 +190,8 @@ public class AuthInfo {
                     api.log().info("AuthInfo", "Expired session");
                     UserSessionInfo mb = gcses.remove();
                     seslist.remove(mb.userid);   
+                    if (_usersesclose != null)
+                        _usersesclose.close(mb);
                 }
                 else
                     break;
@@ -248,7 +262,9 @@ public class AuthInfo {
          * create a new one. 
          */
         UserSessionInfo uses = seslist.get(userid);
-        if (uses==null) 
+        if (uses==null && _usersesfactory != null) 
+            uses = _usersesfactory.create(userid); 
+        if (uses==null);
             uses = new UserSessionInfo(userid);
         
         seslist.put(userid, uses);

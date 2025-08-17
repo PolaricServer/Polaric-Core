@@ -38,6 +38,9 @@ public abstract class WebServer implements ServerAPI.Web {
     private long _nRequests = 0;
     
     
+    public static class UserSessionInfo extends AuthInfo.UserSessionInfo {
+        public UserSessionInfo(String uid) {super(uid);}
+    }
 
     
     
@@ -164,8 +167,15 @@ public abstract class WebServer implements ServerAPI.Web {
     public void onLogout(UserLogin not) {
         _logoutCb.add(not);
     }
+    public void createUserSes(AuthInfo.SesCreateFunc f) {
+        AuthInfo.setUserSesFactory(f);
+    }
+    public void closeUserSes(AuthInfo.SesCloseFunc f) {
+        AuthInfo.setUserSesClose(f);
+    }
     
     
+
     /**
      * User login notification. To be called from AuthInfo class 
      */
