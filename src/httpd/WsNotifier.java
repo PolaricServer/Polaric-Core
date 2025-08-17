@@ -61,13 +61,13 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
         public String group()
             { return (_auth == null ? null : _auth.groupid); }
         
-        public WsContext ctx() { return _ctx; }
-        public String host()   { return _ctx.host(); }
-        public String uid()    { return _ctx.sessionId(); }
-        public Date created()  { return _ctime; }
-        public long nIn()      { return _nIn; }
-        public long nOut()     { return _nOut; }
-      
+        public WsContext ctx()    { return _ctx; }
+        public String host()      { return _ctx.host(); }
+        public String uid()       { return _ctx.sessionId(); }
+        public Date created()     { return _ctime; }
+        public long nIn()         { return _nIn; }
+        public long nOut()        { return _nOut; }
+        public boolean isMobile() { return _mobile; }
          
         public void send(String msg) {
             if (msg == null) msg="";

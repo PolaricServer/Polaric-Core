@@ -197,7 +197,7 @@ public class AuthInfo {
         { return userid != null; }
        
     
-        
+        // FIXME
     public boolean isTrackerAllowed(String tr, String chan) {
         return operator || admin; 
     }

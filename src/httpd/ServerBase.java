@@ -96,7 +96,10 @@ public abstract class ServerBase
         }
     }
     
-   
+    public static void addSubtype(Class type, String name) {
+        mapper.registerSubtypes(new NamedType(type, name));
+    }
+    
    
     public ServerBase(ServerAPI api) 
     {

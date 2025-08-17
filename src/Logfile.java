@@ -37,13 +37,13 @@ public class Logfile
        new DateFormatSymbols(new Locale("no")));
     
         
-        
-    private void init(ServerAPI api, String configname, OutputStream logfile) 
+
+    private void init(ServerAPI api, String configname, OutputStream logfile)
     {     
        try {
-          _log = true; // api.getBoolProperty(configname + ".log.on", true); FIXME
-          int lv = 0;  // api.getIntProperty(configname + ".log.level", 1); FIXME
-          
+          _log = api.getBoolProperty(configname + ".log.on", true);
+          int lv = api.getIntProperty(configname + ".log.level", 1);
+
           if (lv > 4 || lv < 0) lv=4;
           _level = Level.values()[lv];
           if (_log) 
@@ -62,10 +62,10 @@ public class Logfile
     
 
     
-    public Logfile(ServerAPI api, String configname, String logfile) 
+    public Logfile(ServerAPI api, String configname, String logfile)
     {     
        try {
-         init(api, configname, 
+         init(api, configname,
             new FileOutputStream(  
               System.getProperties().getProperty("logdir", ".")+"/"+logfile , true));
        }

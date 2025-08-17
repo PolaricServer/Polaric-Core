@@ -139,6 +139,12 @@ public abstract class WebServer implements ServerAPI.Web {
                 u.add(c.userName());
         return u;
     }
+
+    
+    public boolean hasLoginUser(String user) {
+        SortedSet<String> uu = loginUsers(); 
+        return uu.contains(user);
+    }
     
     
     /**

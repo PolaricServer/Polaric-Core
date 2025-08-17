@@ -103,6 +103,12 @@ public interface ServerAPI
      */
     public int getIntProperty (String pn, int dval);
    
+   
+    /**
+     * Get position (lat, long) configuration property.
+     */
+    public double[] getPosProperty(String pname);
+    
     
     public Logfile log();
     public Web getWebserver(); 
