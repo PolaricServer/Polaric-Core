@@ -153,7 +153,6 @@ public class AuthInfo {
          */
         ws.onCloseSes( (c)-> {
             AuthInfo a = c.authInfo();
-            System.out.println("**** onCloseSes: "+a);
             if (a==null || a.userid == null)
                 return;
                 
@@ -203,7 +202,7 @@ public class AuthInfo {
     
     
     public String toString() {
-       return "AuthInfo [userid="+userid+", admin="+admin+", operator="+operator+"]";
+       return "AuthInfo [userid="+userid+", admin="+admin+", operator="+operator+", userses="+(userses== null?"-" : userses.userid)+"]";
     }
     
     
@@ -264,10 +263,11 @@ public class AuthInfo {
         UserSessionInfo uses = seslist.get(userid);
         if (uses==null && _usersesfactory != null) 
             uses = _usersesfactory.create(userid); 
-        if (uses==null);
+        if (uses==null)
             uses = new UserSessionInfo(userid);
         
         seslist.put(userid, uses);
+        userses = uses; 
         return uses;
     }
     
@@ -310,8 +310,10 @@ public class AuthInfo {
             User u = (User) profile.get().getAttribute("userInfo");
             Group grp = (Group) profile.get().getAttribute("role");
             authorize(u, grp);
+            userses = getUserses();
         }
-       
+
+        
         servercall=api.getProperty("default.mycall", "NOCALL");
     }
     

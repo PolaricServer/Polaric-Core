@@ -153,12 +153,14 @@ public abstract class ServerBase
       { return AuthService.getAuthInfo(ctx); }
 
       
+      
     /* TTL is in minutes */
     public void systemNotification(String user, String txt, int ttl) {
         _api.getWebserver().notifyUser(user, 
             new ServerAPI.Notification("system", "system", txt, new Date(), ttl) );  
     }
 
+    
    /**
     * Sanitize text input that can be used in HTML output. 
     */
