@@ -28,7 +28,7 @@ import java.util.*;
 
 
 public abstract class WebServer implements ServerAPI.Web {
-    private int _port;
+    protected int _port;
     private Javalin _app; 
     private AuthService _auth;
     private PubSub _psub;
