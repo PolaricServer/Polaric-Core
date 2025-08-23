@@ -1,5 +1,5 @@
 # Core framework/library for servers
-Work is in progress, splitting Polaric-aprsd into two artifacts. Arctic-Core is a general framework for creating servers for REST APIs and websocket-communication. It has a focus on security.
+Arctic-Core is a general framework for creating servers for REST APIs and websocket-communication. It has a focus on security. IT was originally part of the Polaric-Aprsd codebase. 
 * It is based on Javalin and Pac4J
 * It uses Maven to build and manage dependencies
 * It supports writing applications in Java and/or Kotlin
@@ -9,5 +9,9 @@ Work is in progress, splitting Polaric-aprsd into two artifacts. Arctic-Core is 
 * It supports server-to-server communication (REST or Websocket). Authentication based on a shared secret. Suitable for IoT devices like e.g. Arctic tracker.
 * License is AGPL 3.0. 
 
-Work is in progress porting (the rest of) Polaric-Aprsd to this framework. More info will come. Interested? Stay tuned. Feel free to participate.  
+Work is in progress porting (the rest of) Polaric-Aprsd to this framework. 
 
+## Getting started
+To build and install it (locally) use 'mvn package' and 'mvn install'. Then it is rather straightforward to add it as a dependency in (maven) pom.xml. We plan to publish it in the maven central. 
+
+We hope to come with some more documentation on how to create application based on arctic-core along with a simple example. More info will come. Interested? Stay tuned. Feel free to participate. 
