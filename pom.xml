@@ -5,12 +5,22 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>no.arctic.core</groupId>
-  <artifactId>Arctic-Core</artifactId>
+  <artifactId>arctic-core</artifactId>
   <version>1.0a</version>
 
-  <name>jltest</name>
+  <name>Arctic Core</name>
+  <description>
+    Arctic-Core is a general framework for creating servers for REST APIs and websocket-communication. It has a focus on security.
+  </description>
 
-
+  <licenses>
+    <license>
+      <name>GNU Affero General Public License version 3</name>
+      <url>https://opensource.org/license/agpl-v3</url>
+      <distribution>manual</distribution>
+    </license>
+  </licenses>
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>17</maven.compiler.source>
@@ -86,10 +96,6 @@
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>3.8.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
         </plugin>
         <plugin>
           <artifactId>maven-jar-plugin</artifactId>
