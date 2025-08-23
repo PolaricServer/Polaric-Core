@@ -1,5 +1,5 @@
 # Core framework/library for servers
-Arctic-Core is a general framework for creating servers for REST APIs and websocket-communication. It has a focus on security. IT was originally part of the Polaric-Aprsd codebase. 
+Arctic-Core is a general framework for creating servers for REST APIs and websocket-communication. It has a focus on security. It was originally part of the Polaric-Aprsd codebase. 
 * It is based on Javalin and Pac4J
 * It uses Maven to build and manage dependencies
 * It supports writing applications in Java and/or Kotlin
