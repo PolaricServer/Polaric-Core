@@ -189,7 +189,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
             _api.log().warn("WsNotifier", "Close session: client "+sesId(ctx)+" not found");
             return;
         }
-        _api.log().warn("WsNotifier", "Close session: "+sesId(ctx)+" ok");
+        _api.log().debug("WsNotifier", "Close session: "+sesId(ctx)+" ok");
         if (c.login())
             _nLoggedIn--;
         _clients.remove(ctx);

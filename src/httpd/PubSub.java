@@ -169,15 +169,6 @@ public class PubSub extends WsNotifier implements ServerAPI.PubSub
     }
    
    
-    /**
-     * Websocket close handler.
-     * FIXME FIXME do we need this?
-     */
-    // public void onClose(Session conn, int statusCode, String reason) {
-    //    String user = _getUid(conn);
-    //   closeSes(conn);
-    // }
-   
    
    
     /**
@@ -191,8 +182,6 @@ public class PubSub extends WsNotifier implements ServerAPI.PubSub
         }
         if (!room.addClient(c))
             _api.log().warn("PubSub", "Client "+sesId(c.ctx())+" denied access to room: "+rid);
-        else
-            _api.log().debug("PubSub", "Client "+sesId(c.ctx())+" granted access to room: "+rid);
     }
     
     
