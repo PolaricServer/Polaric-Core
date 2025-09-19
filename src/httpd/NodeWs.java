@@ -27,7 +27,7 @@ import io.javalin.websocket.*;
 
 
 /**
- * WebSocket communiction between Polaric Server backend nodes. 
+ * WebSocket communiction between server nodes. 
  */
 
 public class NodeWs extends WsNotifier 
@@ -50,7 +50,7 @@ public class NodeWs extends WsNotifier
         @Override synchronized public void handleTextFrame(String text) {
             String[] parms = text.split(" ", 2);
             if (parms.length < 2) {
-                _api.log().warn("NodeWs", "Format error in message");
+                _conf.log().warn("NodeWs", "Format error in message");
                 close();
             }
             else
@@ -91,8 +91,8 @@ public class NodeWs extends WsNotifier
     
             
         
-    public NodeWs(ServerAPI api, NodeWsApi.Handler<String> hdl) { 
-        super(api); 
+    public NodeWs(ServerConfig conf, NodeWsApi.Handler<String> hdl) { 
+        super(conf); 
         _handler = hdl;
         
         hb.schedule( new TimerTask() { 
@@ -136,11 +136,11 @@ public class NodeWs extends WsNotifier
       * Post a message to node. Returns true if sending was successful.
       */
     public boolean putText(String nodeid, String msg) {
-        _api.log().debug("NodeWs", "Post message to: "+nodeid);
+        _conf.log().debug("NodeWs", "Post message to: "+nodeid);
         
         Client client = (Client) _subscribers.get(nodeid);
         if (client == null) {
-            _api.log().warn("NodeWs", "Node not connected: "+nodeid);
+            _conf.log().warn("NodeWs", "Node not connected: "+nodeid);
             return false;
         }
       

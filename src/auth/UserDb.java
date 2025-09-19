@@ -26,7 +26,7 @@ import java.util.*;
  * some database system. 
  */
  
-public interface UserDb extends ServerAPI.UserDb
+public interface UserDb extends ServerConfig.UserDb
 {
 
     /**

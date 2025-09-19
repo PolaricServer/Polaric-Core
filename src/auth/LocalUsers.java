@@ -69,7 +69,7 @@ public class LocalUsers implements UserDb
     }
     
     
-    private ServerAPI _api;
+    private ServerConfig _conf;
     private SortedMap<String, User> _users = new TreeMap<String, User>();
     private String _filename; 
     private GroupDb _groups;
@@ -79,13 +79,13 @@ public class LocalUsers implements UserDb
     
     
     
-    // FIXME: Move this to ServerAPI ?
+    // FIXME: Move this to ServerConfig ?
     private final ScheduledExecutorService scheduler =
        Executors.newScheduledThreadPool(1);
     
     
-    public LocalUsers(ServerAPI api, String fname, GroupDb gr, AuthService svc) {
-        _api = api;
+    public LocalUsers(ServerConfig conf, String fname, GroupDb gr, AuthService svc) {
+        _conf = conf;
         _syncer = new UserDb.DummySyncer();
         _filename = fname; 
         _groups = gr; 
@@ -99,7 +99,7 @@ public class LocalUsers implements UserDb
                     _dirty = false; 
                 }
                 catch (Exception e) {
-                    _api.log().warn("LocalUsers", "Exception in scheduled action: "+e);
+                    _conf.log().warn("LocalUsers", "Exception in scheduled action: "+e);
                     e.printStackTrace(System.out);
                 }
             } ,2, 2, HOURS);
@@ -162,7 +162,7 @@ public class LocalUsers implements UserDb
               String passwd, String group, String agrp) {
         User u = add(userid); 
         if (u==null) {
-            _api.log().info("LocalUsers", "add: user '"+userid+"' already exists");
+            _conf.log().info("LocalUsers", "add: user '"+userid+"' already exists");
             return null;
         }
         if (!updatePasswd(userid, passwd)) {
@@ -174,7 +174,7 @@ public class LocalUsers implements UserDb
         u.setSuspended(suspend);
         Group g = _groups.get(group);
         if (g == null)
-            _api.log().info("LocalUsers", "group '"+group+"' not found");
+            _conf.log().info("LocalUsers", "group '"+group+"' not found");
         u.setGroup(g);
         
         if (agrp==null)
@@ -182,7 +182,7 @@ public class LocalUsers implements UserDb
         
         Group ag = _groups.get(agrp);
         if (ag == null)
-            _api.log().info("LocalUsers", "group '"+agrp+"' not found");    
+            _conf.log().info("LocalUsers", "group '"+agrp+"' not found");    
             
         u.setAltGroup(g);
         _dirty = true;
@@ -202,7 +202,7 @@ public class LocalUsers implements UserDb
     public synchronized void remove(String username) {
         _users.remove(username);
         _dirty = true;
-        _api.log().debug("LocalUsers", "remove: user '"+username+"'");
+        _conf.log().debug("LocalUsers", "remove: user '"+username+"'");
          var cmd = "/usr/bin/sudo /usr/bin/htpasswd -D /etc/polaric-aprsd/passwd "+username;
          try {
             var p = Runtime.getRuntime().exec(cmd);
@@ -210,13 +210,13 @@ public class LocalUsers implements UserDb
              
             if (res == 0) {
                 _authService.reloadPasswds();
-                _api.log().info("LocalUsers", "Password deleted for user: '"+username+"'"); 
+                _conf.log().info("LocalUsers", "Password deleted for user: '"+username+"'"); 
                 return;
             }
             else 
-                _api.log().warn("LocalUsers", "Couldn't delete passwd: error="+res);
+                _conf.log().warn("LocalUsers", "Couldn't delete passwd: error="+res);
         } catch (IOException e) {
-            _api.log().warn("LocalUsers", "Couldn't delete passwd: "+e.getMessage());
+            _conf.log().warn("LocalUsers", "Couldn't delete passwd: "+e.getMessage());
         } catch (InterruptedException e) {}
         
     }
@@ -233,17 +233,17 @@ public class LocalUsers implements UserDb
              
             if (res == 0) {
                 _authService.reloadPasswds();
-                _api.log().info("LocalUsers", "Password updated for user: '"+username+"'"); 
+                _conf.log().info("LocalUsers", "Password updated for user: '"+username+"'"); 
                 return true;
             }
             else if (res == 5)
-                _api.log().warn("LocalUsers", "Couldn't update passwd: Input is too long");
+                _conf.log().warn("LocalUsers", "Couldn't update passwd: Input is too long");
             else if (res == 6)
-                _api.log().warn("LocalUsers", "Couldn't update passwd: Input contains illegal characters");
+                _conf.log().warn("LocalUsers", "Couldn't update passwd: Input contains illegal characters");
             else if (res == 7)
-                _api.log().warn("LocalUsers", "Couldn't update passwd: Invalid password file");
+                _conf.log().warn("LocalUsers", "Couldn't update passwd: Invalid password file");
             else {
-                _api.log().warn("LocalUsers", "Couldn't update passwd: Internal server problem");
+                _conf.log().warn("LocalUsers", "Couldn't update passwd: Internal server problem");
                 BufferedReader bri = new BufferedReader(new InputStreamReader(p.getInputStream()));
                 String line;
                 while ((line = bri.readLine()) != null)
@@ -252,7 +252,7 @@ public class LocalUsers implements UserDb
                 
                 
         } catch (IOException e) {
-            _api.log().warn("LocalUsers", "Couldn't update passwd: "+e.getMessage());
+            _conf.log().warn("LocalUsers", "Couldn't update passwd: "+e.getMessage());
         } catch (InterruptedException e) {}
         return false; 
     }
@@ -269,9 +269,9 @@ public class LocalUsers implements UserDb
      */
     public synchronized void save() {
         try {
-            _api.log().info("LocalUsers", "Saving user data...");
+            _conf.log().info("LocalUsers", "Saving user data...");
             if (_filename == null) {
-                _api.log().warn("LocalUsers", "Filename is not set - cannot save");
+                _conf.log().warn("LocalUsers", "Filename is not set - cannot save");
                 return; 
             }
                 
@@ -297,7 +297,7 @@ public class LocalUsers implements UserDb
             out.close();
         }
         catch (Exception e) {
-            _api.log().warn("LocalUsers", "Cannot save data: "+e);
+            _conf.log().warn("LocalUsers", "Cannot save data: "+e);
             e.printStackTrace(System.out);
         } 
     }
@@ -308,9 +308,9 @@ public class LocalUsers implements UserDb
      */
     public synchronized void restore() {
         try {
-            _api.log().info("LocalUsers", "Restoring user data...");
+            _conf.log().info("LocalUsers", "Restoring user data...");
             if (_filename == null) {
-                _api.log().warn("LocalUsers", "Filename is not set - cannot restore");
+                _conf.log().warn("LocalUsers", "Filename is not set - cannot restore");
                 return; 
             }
             BufferedReader rd = new BufferedReader(new FileReader(_filename));
@@ -357,7 +357,7 @@ public class LocalUsers implements UserDb
         }
         catch (EOFException e) { }
         catch (Exception e) {
-            _api.log().warn("LocalUsers", "Cannot restore data: "+e);
+            _conf.log().warn("LocalUsers", "Cannot restore data: "+e);
             e.printStackTrace(System.out);
             _users.clear();
         }

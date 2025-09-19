@@ -41,7 +41,7 @@ import com.fasterxml.jackson.databind.jsontype.NamedType;
  
 public class AuthService {
     
-    private static ServerAPI _api; // FIXME: This is static. 
+    private static ServerConfig _conf; // FIXME: This is static. 
     private static Logfile  _log;
     
     private Config _authConf; 
@@ -68,20 +68,20 @@ public class AuthService {
     }
     
     
-    public AuthService(ServerAPI api) {
-       _api = api; 
-       _log = new Logfile(api, "auth", "auth.log");        
-       _allowOrigin = api.getProperty("httpserver.alloworigin", ".*");
-       _userFile    = api.getProperty("httpserver.userfile",    "/var/lib/polaric/users.dat");
-       _groupFile   = api.getProperty("httpserver.groupfile",   "/etc/polaric-aprsd/groups");
-       _passwdFile  = api.getProperty("httpserver.passwdfile",  "/etc/polaric-aprsd/passwd");
-       _dkeyFile    = api.getProperty("httpserver.keyfile",     "/etc/polaric-aprsd/keys/peers");
-       _ukeyFile    = api.getProperty("httpserver.loginkeyfile","/var/lib/polaric/logins.dat");
+    public AuthService(ServerConfig conf) {
+       _conf = conf; 
+       _log = new Logfile(conf, "auth", "auth.log");        
+       _allowOrigin = conf.getProperty("httpserver.alloworigin", ".*");
+       _userFile    = conf.getProperty("httpserver.userfile",    "/var/lib/polaric/users.dat");
+       _groupFile   = conf.getProperty("httpserver.groupfile",   "/etc/polaric-aprsd/groups");
+       _passwdFile  = conf.getProperty("httpserver.passwdfile",  "/etc/polaric-aprsd/passwd");
+       _dkeyFile    = conf.getProperty("httpserver.keyfile",     "/etc/polaric-aprsd/keys/peers");
+       _ukeyFile    = conf.getProperty("httpserver.loginkeyfile","/var/lib/polaric/logins.dat");
        
-       _groups = new LocalGroups(api, _groupFile);
-       _users = new LocalUsers(api, _userFile, _groups, this);
-       _passwds = new PasswordFileAuthenticator(api, _passwdFile, _users);
-       _hmac = new HmacAuthenticator(api, _dkeyFile, _ukeyFile, _users);
+       _groups = new LocalGroups(conf, _groupFile);
+       _users = new LocalUsers(conf, _userFile, _groups, this);
+       _passwds = new PasswordFileAuthenticator(conf, _passwdFile, _users);
+       _hmac = new HmacAuthenticator(conf, _dkeyFile, _ukeyFile, _users);
        _authConf = new AuthConfig(_passwds, _hmac).build();
     }
    
@@ -188,7 +188,7 @@ public class AuthService {
      * Return authorization status (as JSON)
      */
     public static void authStatus(Context ctx) {
-        AuthInfo auth = new AuthInfo(_api, new JavalinWebContext(ctx));
+        AuthInfo auth = new AuthInfo(_conf, new JavalinWebContext(ctx));
         ctx.json(auth);
     }
 
@@ -239,7 +239,7 @@ public class AuthService {
       if (ainfo.isPresent()) 
          return ainfo.get();
       
-      AuthInfo auth = new AuthInfo(_api, context); 
+      AuthInfo auth = new AuthInfo(_conf, context); 
       context.setRequestAttribute("authinfo", auth);
       return auth;
    }

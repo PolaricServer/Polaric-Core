@@ -115,9 +115,9 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
    
    
    
-    public WsNotifier(ServerAPI api) {
-        super(api);
-        _trustedOrigin = _api.getProperty("trusted.orgin", ".*");
+    public WsNotifier(ServerConfig conf) {
+        super(conf);
+        _trustedOrigin = _conf.getProperty("trusted.orgin", ".*");
     }
     
          
@@ -162,7 +162,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
       if (qstring != null) {
          params = qstring.split(";");
          if (params.length < 3 || params.length > 4) {
-            _api.log().info("WsNotifier", "Authentication failed, wrong format of query string");
+            _conf.log().info("WsNotifier", "Authentication failed, wrong format of query string");
             return null;
          }
       }
@@ -171,7 +171,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
          String rname = (params.length == 4 ? params[3] : null);
          User ui = auth.checkAuth(params[0], params[1], params[2], "");
          Group grp = auth.getRole(ui, rname);
-         return new AuthInfo(_api, ui, grp); 
+         return new AuthInfo(_conf, ui, grp); 
       }
       catch (Exception e) {}
       return null;
@@ -186,10 +186,10 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
             return;
         Client c = _clients.get(ctx);
         if (c==null) {
-            _api.log().warn("WsNotifier", "Close session: client "+sesId(ctx)+" not found");
+            _conf.log().warn("WsNotifier", "Close session: client "+sesId(ctx)+" not found");
             return;
         }
-        _api.log().debug("WsNotifier", "Close session: "+sesId(ctx)+" ok");
+        _conf.log().debug("WsNotifier", "Close session: "+sesId(ctx)+" ok");
         if (c.login())
             _nLoggedIn--;
         _clients.remove(ctx);
@@ -210,7 +210,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
     private void openSes(WsContext ctx) {
         try {
             String qstring = ctx.queryString();
-            _api.log().debug("WsNotifier", "Open session - query string: "+qstring);
+            _conf.log().debug("WsNotifier", "Open session - query string: "+qstring);
           
             /* Check origin */
             _origin = ctx.header("Origin");
@@ -229,7 +229,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
                 ));
                  
                 if (subscribe(ctx, client)) {
-                    _api.log().debug("WsNotifier", "Open session accepted: "+sesId(ctx));
+                    _conf.log().debug("WsNotifier", "Open session accepted: "+sesId(ctx));
                     _clients.put(ctx, client); 
                     _visits++;
                  
@@ -243,15 +243,15 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
                     }
                 }
                 else {
-                    _api.log().info("WsNotifier", "Open session rejected: "+sesId(ctx));
+                    _conf.log().info("WsNotifier", "Open session rejected: "+sesId(ctx));
                     ctx.closeSession();
                 }
             }
             else
-                _api.log().info("WsNotifier", "Open session rejected. Untrusted origin='"+_origin+"'");
+                _conf.log().info("WsNotifier", "Open session rejected. Untrusted origin='"+_origin+"'");
           
         } catch(Exception e) {
-            _api.log().warn("WsNotifier", "Open session failed: " + e);
+            _conf.log().warn("WsNotifier", "Open session failed: " + e);
             if (e instanceof NullPointerException)
                 e.printStackTrace(System.out);
         }  
@@ -301,7 +301,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
           }
        } 
        catch (Exception e) {
-          _api.log().error("WsNotifier", "Cannot distribute string: " + e);
+          _conf.log().error("WsNotifier", "Cannot distribute string: " + e);
           e.printStackTrace(System.out);
        }
     } 
@@ -322,7 +322,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
         
         a.ws(uri, ws -> {
             ws.onConnect(ctx -> {
-                _api.log().debug("WsNotifier", "Websocket connection: "+sesId(ctx));
+                _conf.log().debug("WsNotifier", "Websocket connection: "+sesId(ctx));
                 ctx.enableAutomaticPings();
                 openSes(ctx);
             });
@@ -337,12 +337,12 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
             }); 
             
             ws.onClose(ctx -> {
-                _api.log().debug("WsNotifier", "onClose: "+sesId(ctx)+", "+ctx.status()+", "+ctx.reason());
+                _conf.log().debug("WsNotifier", "onClose: "+sesId(ctx)+", "+ctx.status()+", "+ctx.reason());
                 closeSes(ctx);
             });
             
             ws.onError(ctx -> {
-                _api.log().warn("WsNotifier", "onError: "+sesId(ctx)+", "+ctx.error());
+                _conf.log().warn("WsNotifier", "onError: "+sesId(ctx)+", "+ctx.error());
             });
         });
     }

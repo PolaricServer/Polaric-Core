@@ -63,7 +63,7 @@ public class AuthInfo {
     public boolean admin = false, operator = false;
     public String tagsAuth;
     public String[] services = null;
-    private ServerAPI _api; 
+    private ServerConfig _conf; 
     
     @JsonIgnore public UserSessionInfo userses = null;
     @JsonIgnore public Group group;
@@ -115,7 +115,7 @@ public class AuthInfo {
      * application program using WebServer class: onLogin() and onLogout(), 
      */
     
-    public static void init(ServerAPI api, SesNotifier ws) {
+    public static void init(ServerConfig conf, SesNotifier ws) {
 
         /*
          * Called when a client session is opened. 
@@ -142,7 +142,7 @@ public class AuthInfo {
             }
             else { 
                 /* Inform system and other PS instances of user login */
-                ((WebServer) api.getWebserver()).notifyLogin(a.userid);
+                ((WebServer) conf.getWebserver()).notifyLogin(a.userid);
             }
         });
            
@@ -166,7 +166,7 @@ public class AuthInfo {
                      */
                     var closing = gc.schedule( () -> {    
                         /* Inform system and other PS instances of user logout. */
-                        ((WebServer) api.getWebserver()).notifyLogout(a.userid);
+                        ((WebServer) conf.getWebserver()).notifyLogout(a.userid);
 
                         /* Put user-session on expire. Expire after 1 week */
                         a.userses.expire = (new Date()).getTime() + 1000 * 60 * USERSES_EXPIRE; 
@@ -186,7 +186,7 @@ public class AuthInfo {
         gc.scheduleAtFixedRate( ()-> {
             while (true) {    
                 if (!gcses.isEmpty() && gcses.peek().expire < (new Date()).getTime()) {
-                    api.log().info("AuthInfo", "Expired session");
+                    conf.log().info("AuthInfo", "Expired session");
                     UserSessionInfo mb = gcses.remove();
                     seslist.remove(mb.userid);   
                     if (_usersesclose != null)
@@ -278,8 +278,8 @@ public class AuthInfo {
      * called from AuthService for each request.
      */
      
-    public AuthInfo(ServerAPI api, User u, Group g) {
-        _api = api;
+    public AuthInfo(ServerConfig conf, User u, Group g) {
+        _conf = conf;
         authorize(u, g);
         var i = 0;
         services = new String[_services.size()];
@@ -292,10 +292,10 @@ public class AuthInfo {
     /**
      * Constructor. Gets info from web context.
      */
-    public AuthInfo(ServerAPI api, WebContext context) 
+    public AuthInfo(ServerConfig conf, WebContext context) 
     {
         Optional<CommonProfile> profile = getSessionProfile(context);
-        _api = api;
+        _conf = conf;
         var i = 0;
         services = new String[_services.size()];
         for (var x : _services)
@@ -314,7 +314,7 @@ public class AuthInfo {
         }
 
         
-        servercall=api.getProperty("default.mycall", "NOCALL");
+        servercall=conf.getProperty("default.mycall", "NOCALL");
     }
     
 }

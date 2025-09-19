@@ -33,7 +33,7 @@ import java.time.Duration;
 
 public class NodeWsClient implements WebSocket.Listener {
     
-    private ServerAPI _api;
+    private ServerConfig _conf;
     private WebSocket _wsClient; 
     private URI _url;
     private HttpClient _ht;
@@ -47,8 +47,8 @@ public class NodeWsClient implements WebSocket.Listener {
     private Timer hb = new Timer();
     
     
-    public NodeWsClient(ServerAPI api, String nodeid, String url, boolean retry) {
-        _api=api;
+    public NodeWsClient(ServerConfig conf, String nodeid, String url, boolean retry) {
+        _conf=conf;
         _nodeid=nodeid;
         _retry = retry;
         try {
@@ -57,7 +57,7 @@ public class NodeWsClient implements WebSocket.Listener {
             open();
         }
         catch (URISyntaxException e) {
-            _api.log().error("NodeWsClient", "Syntax error in URI: "+_url);
+            _conf.log().error("NodeWsClient", "Syntax error in URI: "+_url);
         }
     }
     
@@ -77,7 +77,7 @@ public class NodeWsClient implements WebSocket.Listener {
     
     public void open() {
         try {
-            HmacAuthenticator auth = ((WebServer)_api.getWebserver()).authService().hmacAuth();
+            HmacAuthenticator auth = ((WebServer)_conf.getWebserver()).authService().hmacAuth();
             URI u = new URI(_url.toString() + "?" + auth.authString("", _userid)); 
             _wsClient = _ht.newWebSocketBuilder()
                 .connectTimeout(Duration.ofSeconds(20))
@@ -85,7 +85,7 @@ public class NodeWsClient implements WebSocket.Listener {
                 .get();
         }
         catch (Exception e) {
-            _api.log().warn("NodeWsClient", "Websocket connect exception: "+e.getMessage());
+            _conf.log().warn("NodeWsClient", "Websocket connect exception: "+e.getMessage());
             retry();
         }
     }
@@ -120,10 +120,10 @@ public class NodeWsClient implements WebSocket.Listener {
     
     
     public boolean putCommand(String cmd, String msg) {
-        _api.log().debug("NodeWsClient", "Post message: "+cmd);
+        _conf.log().debug("NodeWsClient", "Post message: "+cmd);
 
         if (!_connected) {
-            _api.log().warn("NodeWsClient", "Node not connected: "+_url);
+            _conf.log().warn("NodeWsClient", "Node not connected: "+_url);
             return false;
         }
         /* Send it on websocket */
@@ -132,7 +132,7 @@ public class NodeWsClient implements WebSocket.Listener {
         }
         catch (CompletionException e) {
             Throwable cause = e.getCause();
-            _api.log().warn("NodeWsClient", "Message delivery failed: "+cause);
+            _conf.log().warn("NodeWsClient", "Message delivery failed: "+cause);
             return false;
         }
         return true;
@@ -152,7 +152,7 @@ public class NodeWsClient implements WebSocket.Listener {
     
     @Override
    public void onError​(WebSocket webSocket, Throwable error) {
-        _api.log().warn("NodeWsClient", "Error: "+error);
+        _conf.log().warn("NodeWsClient", "Error: "+error);
         error.printStackTrace(System.out);
         _connected = false;
         _retr_int = 60000 * 8; // Retry after 16 minutes
@@ -172,7 +172,7 @@ public class NodeWsClient implements WebSocket.Listener {
     
     @Override
     public CompletionStage<?> onClose​(WebSocket webSocket, int statusCode, String reason) {
-        _api.log().debug("NodeWsClient", "Connection closed. Statuscode: "+ statusCode + " "+reason);
+        _conf.log().debug("NodeWsClient", "Connection closed. Statuscode: "+ statusCode + " "+reason);
         _connected = false;
         retry();
         return null;
@@ -207,15 +207,15 @@ public class NodeWsClient implements WebSocket.Listener {
     
     @Override
     public CompletionStage<?> onText​(WebSocket webSocket, CharSequence data, boolean last) {
-        _api.log().debug("NodeWsClient", "onText: "+_nodeid+", "+_handler);
+        _conf.log().debug("NodeWsClient", "onText: "+_nodeid+", "+_handler);
         if (_handler != null) {
             String[] parms = data.toString().split(" ", 2);
             if (parms.length < 2) { 
                 if (parms.length == 0 || !parms[0].equals("PING"))
-                    _api.log().warn("NodeWsClient", "Format error in message");
+                    _conf.log().warn("NodeWsClient", "Format error in message");
             }
             else if (parms[0].equals("POST")) {
-                _api.log().debug("NodeWsClient", "calling handler: "+_nodeid);
+                _conf.log().debug("NodeWsClient", "calling handler: "+_nodeid);
                 _handler.recv(_nodeid, parms[1]);
             }
         }

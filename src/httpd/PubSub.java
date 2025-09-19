@@ -38,7 +38,7 @@ import io.javalin.websocket.*;
  * A room must be created on the server side before being subscribed to (see createRoom methods)
  */
  
-public class PubSub extends WsNotifier implements ServerAPI.PubSub
+public class PubSub extends WsNotifier implements ServerConfig.PubSub
 {
 
     public class Client extends WsNotifier.Client
@@ -49,7 +49,7 @@ public class PubSub extends WsNotifier implements ServerAPI.PubSub
              
        
         @Override synchronized public void handleTextFrame(String text) {
-            _api.log().debug("PubSub", "Client "+sesId(_ctx)+", userid="+userName()+" : " + text);
+            _conf.log().debug("PubSub", "Client "+sesId(_ctx)+", userid="+userName()+" : " + text);
             String[] parms = text.split(",", 2);
             switch (parms[0]) {
                 /* subscribe, room */
@@ -164,7 +164,7 @@ public class PubSub extends WsNotifier implements ServerAPI.PubSub
     {
         if (client.login())
             createUserRoom("notify:"+client.userName(), 
-               client.userName(), ServerAPI.Notification.class);
+               client.userName(), ServerConfig.Notification.class);
         return true; 
     }
    
@@ -177,11 +177,11 @@ public class PubSub extends WsNotifier implements ServerAPI.PubSub
     protected void subscribe(Client c, String rid) {
         Room room = _rooms.get(rid);
         if (room == null) {
-            _api.log().warn("PubSub", "Room not found: "+rid);
+            _conf.log().warn("PubSub", "Room not found: "+rid);
             return;
         }
         if (!room.addClient(c))
-            _api.log().warn("PubSub", "Client "+sesId(c.ctx())+" denied access to room: "+rid);
+            _conf.log().warn("PubSub", "Client "+sesId(c.ctx())+" denied access to room: "+rid);
     }
     
     
@@ -240,7 +240,7 @@ public class PubSub extends WsNotifier implements ServerAPI.PubSub
     private void _put(Room rm, String msg, String uname) {
         if (rm == null || rm.nClients() == 0) 
             return;
-        _api.log().debug("PubSub", "Post message: "+rm+", "+uname+", "+msg);
+        _conf.log().debug("PubSub", "Post message: "+rm+", "+uname+", "+msg);
         postText(msg, 
            c-> (rm != null && rm.hasClient((PubSub.Client) c) && 
                     (uname==null || uname.equals(((PubSub.Client) c).userName()))
@@ -270,8 +270,8 @@ public class PubSub extends WsNotifier implements ServerAPI.PubSub
         { put(rid, obj, null); }
         
         
-    public PubSub(ServerAPI api)
-        { super(api); }  
+    public PubSub(ServerConfig conf)
+        { super(conf); }  
    
    
     

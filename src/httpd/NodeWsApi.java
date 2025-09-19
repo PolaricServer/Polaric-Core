@@ -31,7 +31,7 @@ public class NodeWsApi<T> {
     private Handler<String> _handler;
     private Handler<T> _chandler;
     private Map<String, NodeWsClient> _servers;
-    private ServerAPI _api;
+    private ServerConfig _conf;
     
     public interface Handler<T> {
         public void recv(String nodeid, T obj);
@@ -40,16 +40,16 @@ public class NodeWsApi<T> {
     
 
     @SuppressWarnings("unchecked")
-    public NodeWsApi(ServerAPI api, String nodeid, NodeWs srv, Class<T> cls) {
+    public NodeWsApi(ServerConfig conf, String nodeid, NodeWs srv, Class<T> cls) {
         _servers = new HashMap<String,NodeWsClient>();
         _children = srv;
         _nodeid = nodeid;
         _cls = cls;
-        _api = api;
+        _conf = conf;
         
         _handler = new Handler<String>() {
             public void recv(String nodeid, String obj) {
-                _api.log().debug("NodeWsApi", "Received message from: "+nodeid);
+                _conf.log().debug("NodeWsApi", "Received message from: "+nodeid);
                 if (_chandler != null)
                     _chandler.recv(nodeid, (T) ServerBase.fromJson(obj, _cls));
             }

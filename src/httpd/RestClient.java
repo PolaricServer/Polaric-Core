@@ -22,20 +22,20 @@ import java.util.concurrent.*;
 import java.time.Duration;
 import no.arctic.core.auth.*;
 import no.arctic.core.util.SecUtils;
-import no.arctic.core.ServerAPI;
+import no.arctic.core.ServerConfig;
 
 
 public class RestClient {
 
-    private ServerAPI _api;  
+    private ServerConfig _conf;  
     private HttpClient _client; 
     private String _url; 
     private HmacAuthenticator _auth;
     private String _userid;
 
     
-    public RestClient(ServerAPI api, String url, HmacAuthenticator hm, String userid) {
-        _api = api;
+    public RestClient(ServerConfig conf, String url, HmacAuthenticator hm, String userid) {
+        _conf = conf;
         _url=url;
         _auth = hm;
         _userid = userid;
@@ -46,13 +46,13 @@ public class RestClient {
             .build();
     }
     
-    public RestClient(ServerAPI api, String url, String userid) { 
-        this(api, url, ((WebServer) api.getWebserver()).authService().hmacAuth(), userid);
+    public RestClient(ServerConfig conf, String url, String userid) { 
+        this(conf, url, ((WebServer) conf.getWebserver()).authService().hmacAuth(), userid);
     }
     
     
-    public RestClient(ServerAPI api, String url, Authenticator auth) {
-        _api=api;
+    public RestClient(ServerConfig conf, String url, Authenticator auth) {
+        _conf=conf;
         _url=url;
         _userid=null;
         _client = HttpClient.newBuilder()
@@ -64,8 +64,8 @@ public class RestClient {
     }
     
     
-    public RestClient(ServerAPI api, String url) {
-        _api=api;
+    public RestClient(ServerConfig conf, String url) {
+        _conf=conf;
         _url=url;
         _userid=null;
         _client = HttpClient.newBuilder()

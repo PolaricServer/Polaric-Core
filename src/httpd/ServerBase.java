@@ -40,7 +40,7 @@ import com.fasterxml.jackson.databind.jsontype.NamedType;
 
 public abstract class ServerBase 
 {
-   protected  ServerAPI      _api;
+   protected  ServerConfig   _conf;
    private    String         _timezone;
    protected  String         _wfiledir;
    protected  String         _icon;    
@@ -101,15 +101,15 @@ public abstract class ServerBase
     }
     
    
-    public ServerBase(ServerAPI api) 
+    public ServerBase(ServerConfig conf) 
     {
-        _api = api; 
-        _ws = (WebServer) api.getWebserver(); 
+        _conf = conf; 
+        _ws = (WebServer) conf.getWebserver(); 
         a = _ws.app();
       
-        _wfiledir    = api.getProperty("map.web.dir", "aprsd");
-        _icon        = api.getProperty("map.icon.default", "sym.gif");
-        _timezone    = api.getProperty("timezone", "");
+        _wfiledir    = conf.getProperty("map.web.dir", "aprsd");
+        _icon        = conf.getProperty("map.icon.default", "sym.gif");
+        _timezone    = conf.getProperty("timezone", "");
                 
         TimeZone.setDefault(null);
         if (_timezone.length() > 1) {
@@ -121,8 +121,8 @@ public abstract class ServerBase
     }
    
    
-    protected ServerAPI api() 
-       { return _api; }
+    protected ServerConfig conf() 
+       { return _conf; }
    
    
     protected WebServer wServer() {
@@ -156,8 +156,8 @@ public abstract class ServerBase
       
     /* TTL is in minutes */
     public void systemNotification(String user, String txt, int ttl) {
-        _api.getWebserver().notifyUser(user, 
-            new ServerAPI.Notification("system", "system", txt, new Date(), ttl) );  
+        _conf.getWebserver().notifyUser(user, 
+            new ServerConfig.Notification("system", "system", txt, new Date(), ttl) );  
     }
 
     

@@ -19,7 +19,7 @@ package no.arctic.core;
 import java.util.*;
  
  
-public interface ServerAPI 
+public interface ServerConfig
 { 
 
     @FunctionalInterface 
@@ -51,6 +51,7 @@ public interface ServerAPI
         
         /** Post a object to a room (JSON encoded) */
         public void put(String rid, Object obj);
+        public void put(String rid, Object obj, String userid);
         
         /** Create a room */
         public void createRoom(String name, Class cl); 
@@ -80,7 +81,8 @@ public interface ServerAPI
             
     }
 
-    
+    /** Plugin properties */
+    public Map<String, Object> properties();
     
     
     /** Get string configuration property. 

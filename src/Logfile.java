@@ -38,7 +38,7 @@ public class Logfile
     
         
 
-    private void init(ServerAPI api, String configname, OutputStream logfile)
+    private void init(ServerConfig api, String configname, OutputStream logfile)
     {     
        try {
           _log = api.getBoolProperty(configname + ".log.on", true);
@@ -57,12 +57,12 @@ public class Logfile
     } 
     
     
-    public Logfile(ServerAPI api)
+    public Logfile(ServerConfig api)
        { init(api, "aprsd", System.out); }
     
 
     
-    public Logfile(ServerAPI api, String configname, String logfile)
+    public Logfile(ServerConfig api, String configname, String logfile)
     {     
        try {
          init(api, configname,

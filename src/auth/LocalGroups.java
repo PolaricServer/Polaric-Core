@@ -37,7 +37,7 @@ public class LocalGroups implements GroupDb
         { return _map.values(); }
 
         
-    public LocalGroups(ServerAPI api, String file) 
+    public LocalGroups(ServerConfig conf, String file) 
     {
         try {
             _map.put("DEFAULT", Group.DEFAULT);
@@ -61,9 +61,9 @@ public class LocalGroups implements GroupDb
             }     
         }
         catch (FileNotFoundException  e) 
-            { api.log().error("LocalGroups", "No groups file present."); }
+            { conf.log().error("LocalGroups", "No groups file present."); }
         catch (Exception  e) 
-            { api.log().error("LocalGroups", ""+e); }        
+            { conf.log().error("LocalGroups", ""+e); }        
     }
     
 }

@@ -27,13 +27,13 @@ import java.util.*;
 
 
 
-public abstract class WebServer implements ServerAPI.Web {
+public abstract class WebServer implements ServerConfig.Web {
     protected int _port;
     private Javalin _app; 
     private AuthService _auth;
     private PubSub _psub;
     private String _psuri;
-    protected ServerAPI _api;
+    protected ServerConfig _conf;
     
     private long _nRequests = 0;
     
@@ -44,15 +44,15 @@ public abstract class WebServer implements ServerAPI.Web {
 
     
     
-    public WebServer(ServerAPI api, int port, String psuri, String stpath, String stdir) {
+    public WebServer(ServerConfig conf, int port, String psuri, String stpath, String stdir) {
         _port = port;
-        _api = api;
+        _conf = conf;
         _psuri = psuri.trim();
         if (_psuri.charAt(0) != '/')
             _psuri = "/" + _psuri;
         
         _app = Javalin.create( config -> {
-            _auth = new AuthService(api);
+            _auth = new AuthService(conf);
         
             /* Serve static files. */
             if (stpath != null && stdir != null)
@@ -71,18 +71,18 @@ public abstract class WebServer implements ServerAPI.Web {
         _app.after(ctx -> {_nRequests++;});
                 
         /* Basic REST service */
-        Services ss = new Services(_api);
+        Services ss = new Services(_conf);
         ss.start();
         
         /* Publish-subscribe service based on websocket */
-        _psub = new PubSub(_api);
+        _psub = new PubSub(_conf);
         _psub.start(_psuri);
         
         /* Register handlers for open and close of login-sessions. Note that there may be 
          * more than one login-session per user-session, but we need to ensure that there is only 
          * one instance of some info for each user-session. 
          */
-        AuthInfo.init(_api, _psub);
+        AuthInfo.init(_conf, _psub);
     }
     
     
@@ -195,7 +195,7 @@ public abstract class WebServer implements ServerAPI.Web {
     /**
      * Send notification to a room. 
      */    
-    public void notifyUser(String user, ServerAPI.Notification not) {
+    public void notifyUser(String user, ServerConfig.Notification not) {
         _psub.put("notify:"+user, not);
     }
     

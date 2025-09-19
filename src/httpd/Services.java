@@ -25,8 +25,8 @@ import java.util.*;
 
 public class Services extends ServerBase {
     
-    public Services(ServerAPI api) {
-        super(api);
+    public Services(ServerConfig conf) {
+        super(conf);
     }
     
     

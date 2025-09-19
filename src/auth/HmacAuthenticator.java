@@ -55,7 +55,7 @@ public class HmacAuthenticator implements Authenticator {
     private final Map<String, Long> _userlogins = new HashMap<String, Long>();
     
     
-    private ServerAPI _api; 
+    private ServerConfig _conf; 
     private final String _ukeyfile, _dkeyfile;   
     private UserDb _users;
     private final DuplicateChecker _dup = new DuplicateChecker(2000);
@@ -63,8 +63,8 @@ public class HmacAuthenticator implements Authenticator {
     
     
     
-    public HmacAuthenticator(ServerAPI api, String dfile, String ufile, UserDb lu) {
-        _api = api; 
+    public HmacAuthenticator(ServerConfig conf, String dfile, String ufile, UserDb lu) {
+        _conf = conf; 
         _dkeyfile = dfile;
         _ukeyfile = ufile;
         _users = lu;
@@ -130,7 +130,7 @@ public class HmacAuthenticator implements Authenticator {
             Files.setPosixFilePermissions(path, PosixFilePermissions.fromString("rw-------")); 
         }
         catch (IOException e) {
-           _api.log().warn("HmacAuthenticator", "Couldn't open key file: "+e.getMessage());
+           _conf.log().warn("HmacAuthenticator", "Couldn't open key file: "+e.getMessage());
         } 
     }
     
@@ -184,13 +184,13 @@ public class HmacAuthenticator implements Authenticator {
                         }
                     }
                     else
-                        _api.log().warn("HmacAuthenticator", "Bad line in key file: "+line);
+                        _conf.log().warn("HmacAuthenticator", "Bad line in key file: "+line);
                 }
             }
             rd.close();
         }
         catch (IOException e) {
-           _api.log().warn("HmacAuthenticator", "Couldn't open key file: "+e.getMessage());
+           _conf.log().warn("HmacAuthenticator", "Couldn't open key file: "+e.getMessage());
         } 
     }
 
@@ -251,7 +251,7 @@ public class HmacAuthenticator implements Authenticator {
             return null;
         Group g = _users.getGroupDb().get(rname);
         if (g==null || !u.roleAllowed(g)) {
-            _api.log().debug("HmacAuthenticator", "Group/role not known or not allowed: "+rname);
+            _conf.log().debug("HmacAuthenticator", "Group/role not known or not allowed: "+rname);
             return null;
         }
         return g;
@@ -297,7 +297,7 @@ public class HmacAuthenticator implements Authenticator {
     public final String authString(String body, String userid) {
         String key = _keymap.get(userid);
         if (key==null) {
-            _api.log().warn("HmacAuthenticator", "Key not found for user: "+userid);
+            _conf.log().warn("HmacAuthenticator", "Key not found for user: "+userid);
             return "";
         }
         String nonce = SecUtils.b64encode( SecUtils.getRandom(8) );
@@ -318,7 +318,7 @@ public class HmacAuthenticator implements Authenticator {
 
     
     protected void throwsException(final String message) throws CredentialsException {
-        _api.log().debug("HmacAuthenticator", "Auth failed: " + message);
+        _conf.log().debug("HmacAuthenticator", "Auth failed: " + message);
          throw new CredentialsException(message);
     }
     

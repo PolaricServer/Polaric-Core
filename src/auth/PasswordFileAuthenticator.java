@@ -42,13 +42,13 @@ import java.security.MessageDigest;
 public class PasswordFileAuthenticator implements Authenticator {
 
     private final Map<String, String> _pwmap = new HashMap<String, String>();
-    private ServerAPI _api; 
+    private ServerConfig _conf; 
     private final String _file; 
     private UserDb _users;
     
     
-    public PasswordFileAuthenticator(ServerAPI api, String file, UserDb lu) {
-        _api = api; 
+    public PasswordFileAuthenticator(ServerConfig conf, String file, UserDb lu) {
+        _conf = conf; 
         _file = file; 
         _users = lu; 
         load();
@@ -63,7 +63,7 @@ public class PasswordFileAuthenticator implements Authenticator {
         try {
             /* Open passwd file */
             if (_file == null) {
-                _api.log().warn("PasswordFileAuthenticator", "Password file name not set");
+                _conf.log().warn("PasswordFileAuthenticator", "Password file name not set");
                 return;
             }
                 
@@ -83,12 +83,12 @@ public class PasswordFileAuthenticator implements Authenticator {
                             _users.add(username);
                     }
                     else
-                        _api.log().warn("PasswordFileAuthenticator", "Bad line in password file: "+line);
+                        _conf.log().warn("PasswordFileAuthenticator", "Bad line in password file: "+line);
                 }
             }
         }
         catch (IOException e) {
-           _api.log().warn("PasswordFileAuthenticator", "Couldn't open htpasswd file: "+e.getMessage());
+           _conf.log().warn("PasswordFileAuthenticator", "Couldn't open htpasswd file: "+e.getMessage());
         } 
     }
     
@@ -149,7 +149,7 @@ public class PasswordFileAuthenticator implements Authenticator {
     
     
     protected void throwsException(final String message) throws CredentialsException {
-        _api.log().info("PasswordFileAuthenticator", "Auth failed: "+message);
+        _conf.log().info("PasswordFileAuthenticator", "Auth failed: "+message);
         throw new CredentialsException(message);
     }
     
