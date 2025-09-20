@@ -84,6 +84,18 @@ public interface ServerConfig
     /** Plugin properties */
     public Map<String, Object> properties();
     
+
+    
+    /** Get configuration properties. */
+    public Properties getConfig();
+   
+    
+    /** Set string configuration property. 
+     * @param pn property name.
+     * @param dval default value. 
+     */
+    public void setProperty(String pname, String dvalue);
+    
     
     /** Get string configuration property. 
      * @param pn property name.
