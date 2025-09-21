@@ -61,12 +61,11 @@ public abstract class WebServer implements ServerConfig.Web {
                     sf.directory = stdir;   
                     sf.location = Location.EXTERNAL;
                 });
-        });
+        }).start(_port);
     }
     
     
     public void start() {
-        _app.start(_port);
         _auth.start(_app);
         _app.after(ctx -> {_nRequests++;});
                 
@@ -97,19 +96,19 @@ public abstract class WebServer implements ServerConfig.Web {
         
     /* Statistics */
     public long nVisits() 
-        { return _psub.nVisits(); }
+        { return (_psub==null ? 0 : _psub.nVisits()); }
         
         
     public long nLogins()
-        { return _psub.nLogins(); }
+        { return (_psub==null ? 0 : _psub.nLogins()); }
         
                 
     public int  nClients() 
-        { return _psub.nClients(); }
+        { return (_psub==null ? 0 : _psub.nClients()); }
         
     
     public int  nLoggedin()
-        { return _psub.nLoggedIn(); }
+        { return (_psub==null ? 0 : _psub.nLoggedIn()); }
     
     
     public long nHttpReq() 

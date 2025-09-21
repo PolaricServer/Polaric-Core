@@ -207,7 +207,7 @@ public class NodeWsClient implements WebSocket.Listener {
     
     @Override
     public CompletionStage<?> onText​(WebSocket webSocket, CharSequence data, boolean last) {
-        _conf.log().debug("NodeWsClient", "onText: "+_nodeid+", "+_handler);
+        _conf.log().debug("NodeWsClient", "Received messasge: "+_nodeid+", "+data.toString());
         if (_handler != null) {
             String[] parms = data.toString().split(" ", 2);
             if (parms.length < 2) { 
@@ -215,7 +215,6 @@ public class NodeWsClient implements WebSocket.Listener {
                     _conf.log().warn("NodeWsClient", "Format error in message");
             }
             else if (parms[0].equals("POST")) {
-                _conf.log().debug("NodeWsClient", "calling handler: "+_nodeid);
                 _handler.recv(_nodeid, parms[1]);
             }
         }

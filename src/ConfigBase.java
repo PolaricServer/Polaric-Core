@@ -10,10 +10,10 @@ import java.util.*;
 
 
 public abstract class ConfigBase implements ServerConfig {
- 
+
     protected Properties _config =new Properties();
-    protected Logfile _log = new Logfile(this);
-    
+    protected Logfile _log = new Logfile(this, null);
+
         
         
     public Logfile log() 

@@ -41,9 +41,11 @@ public class Logfile
     private void init(ServerConfig api, String configname, OutputStream logfile)
     {     
        try {
+         if (configname == null)
+            configname = "app";
           _log = api.getBoolProperty(configname + ".log.on", true);
           int lv = api.getIntProperty(configname + ".log.level", 1);
-
+          
           if (lv > 4 || lv < 0) lv=4;
           _level = Level.values()[lv];
           if (_log) 
@@ -57,8 +59,8 @@ public class Logfile
     } 
     
     
-    public Logfile(ServerConfig api)
-       { init(api, "aprsd", System.out); }
+    public Logfile(ServerConfig api, String configname)
+       { init(api, configname, System.out); }
     
 
     
