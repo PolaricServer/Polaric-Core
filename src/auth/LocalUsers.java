@@ -356,6 +356,10 @@ public class LocalUsers implements UserDb
             }
         }
         catch (EOFException e) { }
+        catch (FileNotFoundException e) {
+            _conf.log().warn("LocalUsers", "Could not open users file: filename ("+e.getMessage()+")");
+            _users.clear();
+        }
         catch (Exception e) {
             _conf.log().warn("LocalUsers", "Cannot restore data: "+e);
             e.printStackTrace(System.out);

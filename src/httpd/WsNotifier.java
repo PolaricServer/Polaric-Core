@@ -69,6 +69,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
         public long nOut()        { return _nOut; }
         public boolean isMobile() { return _mobile; }
          
+        /** Send message back to client. */
         public void send(String msg) {
             if (msg == null) msg="";
             _nOut++; 

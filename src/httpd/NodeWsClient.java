@@ -207,7 +207,7 @@ public class NodeWsClient implements WebSocket.Listener {
     
     @Override
     public CompletionStage<?> onText​(WebSocket webSocket, CharSequence data, boolean last) {
-        _conf.log().debug("NodeWsClient", "Received messasge: "+_nodeid+", "+data.toString());
+        _conf.log().debug("NodeWsClient", "Received message: "+_nodeid);
         if (_handler != null) {
             String[] parms = data.toString().split(" ", 2);
             if (parms.length < 2) { 
