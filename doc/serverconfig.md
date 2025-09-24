@@ -53,12 +53,5 @@ public class Main extends ConfigBase {
 
     // Implement additional required methods...
 
-    // A static main method could also be put her to start up the appl
+    // A static main method could also be put her to start up the application
 }
-    
-    
-    
-    
-    
-    
-    
