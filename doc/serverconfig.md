@@ -1,10 +1,10 @@
 # The Server Config interface
  
- The *ServerConfig* interface in Arctic-Core defines the central contract for server configuration and management. Its purpose is to standardize how core server implementation components access configuration properties, logging, web server integration, etc. 
+ The [*ServerConfig*](https://sarhack.no/apidocs/arctic-core/no/arctic/core/ServerConfig.html) interface in Arctic-Core defines the central contract for server configuration and management. Its purpose is to standardize how core server implementation components access configuration properties, logging, web server integration, etc. 
 
 ## Usage by Applications:
 
-Applications typically implement or extend the ServerConfig interface (for example, via the ConfigBase abstract class) to provide concrete configuration logic. Application code can then access configuration and core services through ServerConfig, such as:
+Applications typically implement or extend the *ServerConfig* interface (for example, via the [*ConfigBase*](https://sarhack.no/apidocs/arctic-core/no/arctic/core/ConfigBase.html) abstract class) to provide concrete configuration logic. Application code can then access configuration and core services through ServerConfig, such as:
 
 - Reading/writing configuration values.
 - Managing users and groups.
