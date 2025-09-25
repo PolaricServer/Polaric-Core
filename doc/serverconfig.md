@@ -25,7 +25,7 @@ The recommended way to implement the methods of the *ServerConfig* interface in 
   For any methods in ServerConfig not fully implemented in ConfigBase (such as *properties()*, *getWebserver()*, *addShutdownHandler()*, etc.), provide concrete implementations in your subclass.
 
 - **Integrate with application components:**  
-  Connect your implementations to actual web server, user database, and pub/sub systems as needed. The WebServer class is an example implementation of the *ServerConfig.Web* interface.
+  Connect your implementations to actual web server, user database, and pub/sub systems as needed. The [WebServer](https://sarhack.no/apidocs/arctic-core/no/arctic/core/httpd/WebServer.html) class is an example implementation of the [*ServerConfig.Web*](https://sarhack.no/apidocs/arctic-core/no/arctic/core/ServerConfig.Web.html) interface.
 
 - **Use dependency injection:**  
   Pass instances of your *ServerConfig* interface to application modules that need access to configuration, logging, or server services.
