@@ -29,7 +29,7 @@ Arctic-Core is a flexible framework for building secure servers with REST APIs a
 
 ## Documentation
 
-Is work-in-progress. See the Javadoc and [ServerConfig interface](https://github.com/PolaricServer/Arctic-Core/blob/main/doc/serverconfig.md) and the [Security Model](https://github.com/PolaricServer/Arctic-Core/blob/main/doc/security.model.md).
+Is work-in-progress. See the [Javadoc](https://sarhack.no/apidocs/arctic-core/),the [ServerConfig interface](https://github.com/PolaricServer/Arctic-Core/blob/main/doc/serverconfig.md) and the [Security Model](https://github.com/PolaricServer/Arctic-Core/blob/main/doc/security.model.md).
 
 ## Contributing
 
