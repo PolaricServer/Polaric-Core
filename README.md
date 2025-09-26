@@ -16,16 +16,20 @@ Arctic-Core is a flexible framework for building secure servers with REST APIs a
 
 ## Getting Started
 
-1. **Build & Install Locally**
+**Build & Install Locally**
    ```shell
    mvn package
    mvn install
    ```
    Then add as a dependency in your Maven `pom.xml`.
 
-2. **Example Application**
+**Example Application**
+
    See [`arctic-core-example`](https://github.com/PolaricServer/arctic-core-example) for a minimal server implementation.
 
+## Documentation
+
+Is work-in-progress. See the Javadoc and [ServerConfig interface](https://github.com/PolaricServer/Arctic-Core/blob/main/doc/serverconfig.md) and the [Security Model](https://github.com/PolaricServer/Arctic-Core/blob/main/doc/security.model.md).
 
 ## Contributing
 
