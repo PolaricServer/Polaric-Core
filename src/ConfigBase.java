@@ -3,35 +3,40 @@ package no.arctic.core;
 import java.util.*;
 
 
-/* 
+/** 
  * Base class, implementing common methods of ServerConfig. 
- * This should be subclassed by application (e.g. by Main class) 
+ * This may be subclassed by application (e.g. by Main class) 
  */
-
 
 public abstract class ConfigBase implements ServerConfig {
 
-    protected Properties _config =new Properties();
-    protected Logfile _log = new Logfile(this, null);
+    private Properties _config =new Properties();
+    private Logfile _log = new Logfile(this, null);
 
         
-        
+    /** Get logfile */
     public Logfile log() 
         { return _log; }
         
+    /* Set logfile */
+    protected void setLogger(Logfile lf) 
+        { _log = lf; }
             
     /** Get configuration properties. */
-    public Properties getConfig()
-           { return _config; }
+    public Properties config()
+        { return _config; }
     
-    
-    
+    /* Set configuration properties */
+    protected void setConfig(Properties prop)
+        { _config = prop; }
+        
+    /** Set a configuration property */
     public void setProperty(String pname, String dvalue) {
         if (_config!=null)
             _config.setProperty(pname, dvalue);
     }
     
-        
+    /** Get a configuration property */
     public String getProperty(String pname, String dvalue) { 
         if (_config==null)
             return null;
@@ -39,7 +44,7 @@ public abstract class ConfigBase implements ServerConfig {
         return (x == null ? x : x.trim()); 
     }
 
-          
+    /** Get boolean property */       
     public boolean getBoolProperty(String pname, boolean dvalue) { 
         if (_config==null)
             return false;
@@ -47,7 +52,7 @@ public abstract class ConfigBase implements ServerConfig {
             .trim().matches("TRUE|true|YES|yes"); 
     } 
           
-          
+    /** Get integer property */
     public int getIntProperty(String pname, int dvalue) {  
         if (_config==null)
             return 0;
@@ -55,7 +60,7 @@ public abstract class ConfigBase implements ServerConfig {
     }
                  
         
-        
+    /** Get position property (lat, long) */
     public double[] getPosProperty(String pname)
     {
         if (_config==null)
@@ -76,6 +81,7 @@ public abstract class ConfigBase implements ServerConfig {
     
     
     // FIXME
+    /** Get plugin properties. */
     public Map<String, Object> properties()
         { return null;}
     

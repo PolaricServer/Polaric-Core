@@ -144,7 +144,7 @@ public class LocalUsers implements UserDb
     
     /**
      * Add a user.
-     * @param user - user id. 
+     * @param userid - user id. 
      */
     public synchronized User add(String userid) {
         if (!_users.containsKey(userid)) {

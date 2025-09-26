@@ -14,6 +14,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+ 
 
 package no.arctic.core.httpd; 
 import no.arctic.core.*;
@@ -24,8 +25,12 @@ import org.pac4j.core.config.Config;
 import org.pac4j.javalin.*;
 import java.util.*;
 
+ 
 
-
+/*
+ * Abstract base class for webserver setup. 
+ * A comcrete application should subclass this.  
+ */
 
 public abstract class WebServer implements ServerConfig.Web {
     protected int _port;
@@ -64,7 +69,9 @@ public abstract class WebServer implements ServerConfig.Web {
         }).start(_port);
     }
     
-    
+    /**
+     * Start the webserver and services. 
+     */
     public void start() {
         _auth.start(_app);
         _app.after(ctx -> {_nRequests++;});
@@ -73,9 +80,14 @@ public abstract class WebServer implements ServerConfig.Web {
         Services ss = new Services(_conf);
         ss.start();
         
-        /* Publish-subscribe service based on websocket */
+        /* 
+         * Publish-subscribe service based on websocket. Two rooms for notifications 
+         * are created by default: SYSTEM and ADMIN 
+         */
         _psub = new PubSub(_conf);
         _psub.start(_psuri);
+        pubSub().createRoom("notify:SYSTEM", false, false, false, true, ServerConfig.Notification.class);
+        pubSub().createRoom("notify:ADMIN", false, false, false, true, ServerConfig.Notification.class);
         
         /* Register handlers for open and close of login-sessions. Note that there may be 
          * more than one login-session per user-session, but we need to ensure that there is only 
@@ -85,48 +97,59 @@ public abstract class WebServer implements ServerConfig.Web {
     }
     
     
+    /** Stop the webserver and services */
     public void stop() throws Exception {
         _app.stop();
     }  
-           
-           
+    
+    
+    /** return the pubsub service */
     public PubSub pubSub()
         { return _psub; }
         
         
     /* Statistics */
+    /** Number of visits since startup. */
     public long nVisits() 
         { return (_psub==null ? 0 : _psub.nVisits()); }
-        
-        
+    
+    
+    /** Number of logins since startup. */
     public long nLogins()
         { return (_psub==null ? 0 : _psub.nLogins()); }
-        
-                
+    
+    
+    /** Number of clients. */
     public int  nClients() 
         { return (_psub==null ? 0 : _psub.nClients()); }
-        
     
+    
+    /** Number of logged-in clients. */
     public int  nLoggedin()
         { return (_psub==null ? 0 : _psub.nLoggedIn()); }
     
     
+    /** Number of http requests since startup. */
     public long nHttpReq() 
         { return _nRequests; }
     
     
+    /** Return the user-database */
     public UserDb userDb()
         { return _auth.userDb(); }
     
     
+    /** Return the group-database */
     public GroupDb groupDb()
         { return _auth.groupDb(); }
         
         
+    /** Return the auth service */    
     public AuthService authService() 
         { return _auth; }
         
-    
+        
+    /** Return a Javalin object */
     public Javalin app() 
         { return _app; }
     
@@ -143,6 +166,7 @@ public abstract class WebServer implements ServerConfig.Web {
     }
 
     
+    /** Return true if the given userid is logged on to the system. */
     public boolean hasLoginUser(String user) {
         SortedSet<String> uu = loginUsers(); 
         return uu.contains(user);
@@ -160,15 +184,30 @@ public abstract class WebServer implements ServerConfig.Web {
     private List<UserLogin> _loginCb = new LinkedList<UserLogin>();
     private List<UserLogin> _logoutCb = new LinkedList<UserLogin>();
     
+    
+    /** Register a handler-function to be called when user logs on to the system. */
     public void onLogin(UserLogin not) {
         _loginCb.add(not);
     }
+    
+    /** Register a handler-function to be called when user logs off the system. */           
     public void onLogout(UserLogin not) {
         _logoutCb.add(not);
     }
+    
+    
+    /** 
+     * Register a handler-function to be called when user-session is opened. 
+     * Can be used to associate information to a user-session.
+     */
     public void createUserSes(AuthInfo.SesCreateFunc f) {
         AuthInfo.setUserSesFactory(f);
     }
+    
+    /** 
+     * Register a handler-function to be called when user-session is closed. 
+     * Can be used to clean up user-session information. 
+     */
     public void closeUserSes(AuthInfo.SesCloseFunc f) {
         AuthInfo.setUserSesClose(f);
     }
@@ -183,6 +222,10 @@ public abstract class WebServer implements ServerConfig.Web {
             x.notify(user);
     }
     
+    
+    /**
+     * User logout notification. To be called from AuthInfo class 
+     */
     public void notifyLogout(String user) {
         for (UserLogin x: _logoutCb)
             x.notify(user);

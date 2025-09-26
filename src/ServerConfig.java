@@ -18,6 +18,10 @@
 package no.arctic.core;
 import java.util.*;
  
+
+/** Interface for server configuration and management. 
+ *  To be implemented by specific application-implementations.  
+ */
  
 public interface ServerConfig
 { 
@@ -27,6 +31,7 @@ public interface ServerConfig
         void cb(); 
     }
     
+    /** Interface to user database */
     public interface UserDb {
         public boolean hasUser(String id); 
     } 
@@ -44,17 +49,21 @@ public interface ServerConfig
             { type = t; from = frm; text=txt; time=tm; ttl = tt; }
     }
         
-    
+    /** Interface to publish-subscribe service (based on websocket) */
     public interface PubSub {
         /** Post a message to a room (text is prefixed with the room name) */
         public void putText (String rid, String msg);
         
         /** Post a object to a room (JSON encoded) */
         public void put(String rid, Object obj);
+        
+        /** Post a object to a room owned by a user (JSON encoded) */
         public void put(String rid, Object obj, String userid);
         
         /** Create a room */
         public void createRoom(String name, Class cl); 
+        
+        /** Create a room with privileges */
         public void createRoom(String name, boolean lg, boolean operator, boolean adm, boolean post, Class cl);
     }
     
@@ -81,51 +90,66 @@ public interface ServerConfig
             
     }
 
-    /** Plugin properties */
+    /** 
+     * Plugin properties.
+     * @return A map of properties (name,value) to be used by plugins. 
+     */
     public Map<String, Object> properties();
     
 
     
-    /** Get configuration properties. */
-    public Properties getConfig();
+    /** 
+     * Get configuration properties.
+     * @return Properties object. 
+     */
+    public Properties config();
    
     
     /** Set string configuration property. 
-     * @param pn property name.
+     * @param pname property name.
      * @param dval default value. 
      */
-    public void setProperty(String pname, String dvalue);
+    public void setProperty(String pname, String dval);
     
     
     /** Get string configuration property. 
-     * @param pn property name.
+     * @param pname property name.
      * @param dval default value. 
+     * @return The value of the property (or dval if not registered)
      */
-    public String getProperty (String pn, String dval); 
+    public String getProperty (String pname, String dval); 
     
     
     /** Get boolean configuration property. 
-     * @param pn property name.
+     * @param pname property name.
      * @param dval default value. 
+     * @return The value of the property (or dval if not registered)
      */
-    public boolean getBoolProperty (String pn, boolean dval);
+    public boolean getBoolProperty (String pname, boolean dval);
        
    
     /** Get integer configuration property. 
-     * @param pn property name.
+     * @param pname property name.
      * @param dval default value. 
+     * @return The value of the property (or dval if not registered)
      */
-    public int getIntProperty (String pn, int dval);
+    public int getIntProperty (String pname, int dval);
    
    
     /**
      * Get position (lat, long) configuration property.
+     * @param pname property name.
+     * @return [lat, long] coordinate
      */
     public double[] getPosProperty(String pname);
     
     
+    /** Use logfile */
     public Logfile log();
+
+    /** Get webserver interface */
     public Web getWebserver(); 
+        
         
     /**
      * Add shutdown handler function. 

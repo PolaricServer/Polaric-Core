@@ -42,7 +42,7 @@ package com.mindprod.base64;
 
 /**
  * Encode arbitrary binary into printable ASCII using BASE64 encoding.
- * <p/>
+ * <p>
  * Base64 is a way of encoding 8-bit characters using only ASCII printable
  * characters similar to UUENCODE. UUENCODE includes a filename where BASE64
  * does not. The spec is described in RFC 2045. Base64 is a scheme where 3 bytes
@@ -53,20 +53,20 @@ package com.mindprod.base64;
  * encode the user:password string in an Authorization: header for HTTP. Don't
  * confuse Base64 with x-www-form-urlencoded which is handled by
  * Java.net.URLEncoder.encode/decode
- * <p/>
+ * <p>
  * If you don't like this code, there is another implementation at
  * http://www.ruffboy.com/download.htm Sun has an undocumented method called
  * sun.misc.Base64Encoder.encode. You could use hex, simpler to code, but not as
  * compact.
- * <p/>
+ * <p>
  * If you wanted to encode a giant file, you could do it in large chunks that
  * are even multiples of 3 bytes, except for the last chunk, and append the
  * outputs.
- * <p/>
+ * <p>
  * To encode a string, rather than binary data java.net.URLEncoder may be
  * better. See printable characters in the Java glossary for a discussion of the
  * differences.
- * <p/>
+ * <p>
  * Base 64 armouring uses only the characters A-Z a-z 0-9 +/=. This makes it
  * suitable for encoding binary data as SQL strings, that will work no matter
  * what the encoding. Unfortunately + / and = all have special meaning in URLs.

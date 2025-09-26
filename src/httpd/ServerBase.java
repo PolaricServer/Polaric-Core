@@ -35,15 +35,16 @@ import com.fasterxml.jackson.databind.jsontype.NamedType;
 
 
 /*
- * Base class for REST API implementations, etc.. 
+ * Abstract base class for REST API implementations, etc.. 
+ * Contains some useful methods..
  */
 
 public abstract class ServerBase 
 {
    protected  ServerConfig   _conf;
    private    String         _timezone;
-   protected  String         _wfiledir;
-   protected  String         _icon;    
+   private    String         _wfiledir;
+   private    String         _icon;    
    private    WebServer      _ws;
    protected  Javalin        a; 
    
@@ -66,14 +67,17 @@ public abstract class ServerBase
    protected final static ObjectMapper mapper = new ObjectMapper();
    
    
+   /** Serialize object to JSON */
    public static String toJson(Object obj) 
        { return serializeJson(obj); }
  
  
+    /** Deserialize object from JSON */
     public static Object fromJson(String text, Class cls) 
        { return deserializeJson(text, cls); }
  
  
+    /** Serialize object to JSON */
     public static String serializeJson(Object obj) {
         try {
             mapper.setDateFormat(isodf);
@@ -84,7 +88,9 @@ public abstract class ServerBase
             return null;
         }
     }
-   
+    
+    
+   /** Deserialize object from JSON */
    @SuppressWarnings("unchecked")
     public static Object deserializeJson(String text, Class cls) {
         try {
@@ -96,11 +102,12 @@ public abstract class ServerBase
         }
     }
     
+    /** Add a subtype to be used in JSON mapper. */
     public static void addSubtype(Class type, String name) {
         mapper.registerSubtypes(new NamedType(type, name));
     }
     
-   
+    
     public ServerBase(ServerConfig conf) 
     {
         _conf = conf; 
@@ -120,11 +127,17 @@ public abstract class ServerBase
         }
     }
    
+    
+    protected String icon() {
+        return _icon;
+    }
    
+    /** Get interface to the server-config */
     protected ServerConfig conf() 
        { return _conf; }
    
    
+    /** Get interface to the web-server */
     protected WebServer wServer() {
         return _ws;
     }
@@ -134,12 +147,13 @@ public abstract class ServerBase
        { return ((double) Math.round(x*100000)) / 100000; 
        }
   
-    
+  
+    /** Protect an URL. Require login and the given authorization level */
     protected void protect(String prefix, String level) { 
         _ws.protectUrl(prefix, level); 
     }
     
-    
+    /** Protect an URL. Require login */
     protected void protect(String prefix) { 
         _ws.protectUrl(prefix); 
     }
@@ -154,7 +168,10 @@ public abstract class ServerBase
 
       
       
-    /* TTL is in minutes */
+    /** 
+     * Send a system notification to a user. 
+     * TTL is in minutes 
+     */
     public void systemNotification(String user, String txt, int ttl) {
         _conf.getWebserver().notifyUser(user, 
             new ServerConfig.Notification("system", "system", txt, new Date(), ttl) );  
@@ -162,7 +179,7 @@ public abstract class ServerBase
 
     
    /**
-    * Sanitize text input that can be used in HTML output. 
+    * Sanitize text that can be used in HTML output. 
     */
    protected String fixText(String t)
    {  
