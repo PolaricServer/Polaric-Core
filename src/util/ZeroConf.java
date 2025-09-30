@@ -16,7 +16,7 @@
  */
 
 
-package no.arctic.core.util;
+package no.polaric.core.util;
 import java.util.*;
 import javax.jmdns.JmDNS;
 import javax.jmdns.ServiceInfo;

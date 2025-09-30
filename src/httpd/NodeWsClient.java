@@ -15,9 +15,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
  
-package no.arctic.core.httpd;
-import no.arctic.core.auth.*;
-import no.arctic.core.*;
+package no.polaric.core.httpd;
+import no.polaric.core.auth.*;
+import no.polaric.core.*;
 import java.io.*;
 import java.net.http.*;
 import java.net.*;
@@ -120,8 +120,6 @@ public class NodeWsClient implements WebSocket.Listener {
     
     
     public boolean putCommand(String cmd, String msg) {
-        _conf.log().debug("NodeWsClient", "Post message: "+cmd);
-
         if (!_connected) {
             _conf.log().warn("NodeWsClient", "Node not connected: "+_url);
             return false;

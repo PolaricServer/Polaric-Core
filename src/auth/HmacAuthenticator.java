@@ -15,10 +15,10 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
  
-package no.arctic.core.auth;
-import no.arctic.core.*; 
-import no.arctic.core.httpd.*;
-import no.arctic.core.util.*;
+package no.polaric.core.auth;
+import no.polaric.core.*; 
+import no.polaric.core.httpd.*;
+import no.polaric.core.util.*;
 import org.pac4j.core.exception.CredentialsException;
 import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.core.util.CommonHelper;

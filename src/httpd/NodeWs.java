@@ -15,8 +15,8 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
  
-package no.arctic.core.httpd;
-import no.arctic.core.*;
+package no.polaric.core.httpd;
+import no.polaric.core.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArraySet;

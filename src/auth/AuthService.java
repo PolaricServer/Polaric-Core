@@ -16,10 +16,10 @@
  */
 
 
-package no.arctic.core.auth;
-import no.arctic.core.*;
-import no.arctic.core.httpd.*;
-import no.arctic.core.util.*;
+package no.polaric.core.auth;
+import no.polaric.core.*;
+import no.polaric.core.httpd.*;
+import no.polaric.core.util.*;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.json.*; 

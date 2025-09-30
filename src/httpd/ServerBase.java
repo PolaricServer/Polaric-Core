@@ -16,9 +16,9 @@
  */
  
  
-package no.arctic.core.httpd;
-import no.arctic.core.*;
-import no.arctic.core.auth.*;
+package no.polaric.core.httpd;
+import no.polaric.core.*;
+import no.polaric.core.auth.*;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import java.net.InetSocketAddress;

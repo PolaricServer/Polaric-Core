@@ -13,16 +13,16 @@
  * GNU General Public License for more details.
  */
  
-package no.arctic.core.httpd;
+package no.polaric.core.httpd;
 import java.io.*;
 import java.net.http.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.time.Duration;
-import no.arctic.core.auth.*;
-import no.arctic.core.util.SecUtils;
-import no.arctic.core.ServerConfig;
+import no.polaric.core.auth.*;
+import no.polaric.core.util.SecUtils;
+import no.polaric.core.ServerConfig;
 
 
 public class RestClient {

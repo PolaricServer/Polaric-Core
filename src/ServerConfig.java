@@ -15,7 +15,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package no.arctic.core;
+package no.polaric.core;
 import java.util.*;
  
 
@@ -94,6 +94,7 @@ public interface ServerConfig
      * Plugin properties.
      * @return A map of properties (name,value) to be used by plugins. 
      */
+     // FIXME: Rename to make it clear that it is plugin props
     public Map<String, Object> properties();
     
 

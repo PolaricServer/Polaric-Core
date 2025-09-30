@@ -16,9 +16,9 @@
  */
  
 
-package no.arctic.core.httpd; 
-import no.arctic.core.*;
-import no.arctic.core.auth.*;
+package no.polaric.core.httpd; 
+import no.polaric.core.*;
+import no.polaric.core.auth.*;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import org.pac4j.core.config.Config;
@@ -48,7 +48,14 @@ public abstract class WebServer implements ServerConfig.Web {
     }
 
     
-    
+    /** 
+     * Constructor for Webserver.
+     * @param conf ServerConfig objecct
+     * @param port Server port 
+     * @param psuri URL to serve 
+     * @param stpath Path for serving static files
+     * @param stdir Directory where static files are to be found. 
+     */
     public WebServer(ServerConfig conf, int port, String psuri, String stpath, String stdir) {
         _port = port;
         _conf = conf;
@@ -57,7 +64,7 @@ public abstract class WebServer implements ServerConfig.Web {
             _psuri = "/" + _psuri;
         
         _app = Javalin.create( config -> {
-            _auth = new AuthService(conf);
+            _auth = new AuthService(conf);;
         
             /* Serve static files. */
             if (stpath != null && stdir != null)
@@ -68,6 +75,8 @@ public abstract class WebServer implements ServerConfig.Web {
                 });
         }).start(_port);
     }
+    
+    
     
     /**
      * Start the webserver and services. 

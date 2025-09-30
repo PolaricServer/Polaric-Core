@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
+
  
- 
-package no.arctic.core.auth;
-import no.arctic.core.*; 
-import no.arctic.core.httpd.*;
+package no.polaric.core.auth;
+import no.polaric.core.*; 
+import no.polaric.core.httpd.*;
 import java.util.*; 
 import java.io.Serializable;
 import java.io.*;
@@ -48,7 +48,7 @@ public class LocalUsers implements UserDb
     /**
      * User info class. Can be serialized and stored in a file. 
      */
-    public class User extends no.arctic.core.auth.User {
+    public class User extends no.polaric.core.auth.User {
      
         private Date lastused; 
 
@@ -133,9 +133,9 @@ public class LocalUsers implements UserDb
     /**
      * Get all users as a collection.
      */
-    public Collection<no.arctic.core.auth.User> getAll() {
-        List<no.arctic.core.auth.User> xl = new ArrayList<no.arctic.core.auth.User>();
-        for (no.arctic.core.auth.User x: _users.values())
+    public Collection<no.polaric.core.auth.User> getAll() {
+        List<no.polaric.core.auth.User> xl = new ArrayList<no.polaric.core.auth.User>();
+        for (no.polaric.core.auth.User x: _users.values())
             xl.add(x);
         return xl;
     }

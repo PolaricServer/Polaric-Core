@@ -16,7 +16,7 @@
  */
  
  
-package no.arctic.core.util; 
+package no.polaric.core.util; 
 import java.io.*;
 import java.util.*;
 import java.security.*;

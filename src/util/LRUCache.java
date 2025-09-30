@@ -1,6 +1,6 @@
 /* Simple LRU Cache */
 
-package no.arctic.core.util; 
+package no.polaric.core.util; 
 import java.util.*;
 
 public class LRUCache<T> {

@@ -15,9 +15,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
  
- package no.arctic.core.auth; 
- import no.arctic.core.*;
- import no.arctic.core.httpd.*;
+ package no.polaric.core.auth; 
+ import no.polaric.core.*;
+ import no.polaric.core.httpd.*;
  import net.cinnom.nanocuckoo.NanoCuckooFilter;
 
  /**

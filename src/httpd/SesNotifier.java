@@ -16,8 +16,8 @@
  */
 
 
-package no.arctic.core.httpd;
-import no.arctic.core.auth.*;
+package no.polaric.core.httpd;
+import no.polaric.core.auth.*;
 
 
 public interface SesNotifier {
