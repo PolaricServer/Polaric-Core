@@ -1,6 +1,6 @@
 # Arctic-Core Framework
 
-Arctic-Core is a flexible framework for building secure servers with REST APIs and websocket communication. It originated from the Polaric-Aprsd project and is designed to support modern authentication, authorization, and real-time messaging patterns.
+*Arctic-Core* is a flexible framework for building secure servers with REST APIs and websocket communication. It originated from the *Polaric-Aprsd* codebase and is designed to support modern authentication, authorization, and real-time messaging patterns.
 
 ## Features
 
