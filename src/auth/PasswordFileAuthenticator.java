@@ -129,6 +129,9 @@ public class PasswordFileAuthenticator implements Authenticator {
         }
         /* Old Crypt(3) algorithm for compatibility. Insecure */
         else if (storedPwd.length() == 13) {
+            _conf.log().warn("PasswordFileAuthenticator", 
+                "WARNING: User '"+username+"' is using deprecated Crypt(3) password hashing. " +
+                "This algorithm is cryptographically weak and should be upgraded to bcrypt (apr1) immediately.");
             String pw = (password.length() <= 8 ? password : password.substring(0,8));
             if (!storedPwd.equals(Crypt.crypt(pw, storedPwd.substring(0,2))))
             throwsException("Invalid password");

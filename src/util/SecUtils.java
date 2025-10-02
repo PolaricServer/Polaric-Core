@@ -39,7 +39,9 @@ public class SecUtils
 
     static {
        try {
-          _rand = SecureRandom.getInstance("SHA1PRNG");
+          // Use platform default SecureRandom (NativePRNG on Linux, Windows-PRNG on Windows)
+          // This provides better entropy than the deprecated SHA1PRNG algorithm
+          _rand = new SecureRandom();
        }
        catch (Exception e) {
           System.out.println("*** SecUtils: Couldnt create random generator");
@@ -83,7 +85,13 @@ public class SecUtils
     }
 
     
-    /* Computes MD5 hash */
+    /**
+     * Computes MD5 hash.
+     * @deprecated MD5 is cryptographically broken and should not be used for security purposes.
+     * Use xDigest() for SHA-256 instead. This method is retained only for compatibility
+     * with legacy systems that require MD5.
+     */
+    @Deprecated
     public final static byte[] digest( byte[] bytes, String txt )
         { return _digest(bytes, txt, "MD5"); }
     
@@ -113,7 +121,9 @@ public class SecUtils
         
     /**
      * Compute a hash from the text, represented as a hexadecimal string.
+     * @deprecated This method uses MD5 which is cryptographically broken. Use xDigestHex() instead.
      */ 
+    @Deprecated
     public final static String digestHex(String txt)
         {return b2hex(digest(null, txt));}
         
@@ -128,7 +138,9 @@ public class SecUtils
      * Base 64 encoded digest.
      * Returns n first characters of digest, encoded using
      * the Base 64 method.
+     * @deprecated This method uses MD5 which is cryptographically broken. Use xDigestB64() instead.
      */
+    @Deprecated
     public final static String digestB64(String txt, int n)
     {
        Base64 b64 = new Base64();

@@ -1,4 +1,4 @@
-/* Simple LRU Cache */
+/* Simple LRU Cache with thread-safe operations */
 
 package no.polaric.core.util; 
 import java.util.*;
@@ -21,24 +21,19 @@ public class LRUCache<T> {
     }
 
 
-    public T get(String key)
+    public synchronized T get(String key)
     {
-        T item = _cache.get(key);
-        if (item != null) {
-            _cache.remove(key);
-            _cache.put(key, item);
-        }
-        return item;
+        return _cache.get(key);
     }
     
     
-    public void remove(String key)
+    public synchronized void remove(String key)
     {
         _cache.remove(key);
     }
     
     
-    public void put(String key, T item)
+    public synchronized void put(String key, T item)
          { _cache.put(key, item); }
  }
 
