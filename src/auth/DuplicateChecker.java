@@ -46,7 +46,7 @@
     }
     
     public boolean contains(String val) {
-        return (_cfilter1.contains(val) && 
+        return (_cfilter1.contains(val) || 
           (_cfilter2 != null && _cfilter2.contains(val)));
     }
     
