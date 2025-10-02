@@ -82,7 +82,7 @@ public abstract class ConfigBase implements ServerConfig {
         if (_config==null)
             return null;
         String inp = _config.getProperty(pname, "0,0").trim(); 
-        if (!inp.matches("[0-9]+(\\.([0-9]+))?\\,([0-9]+)(\\.([0-9]+))?")) {
+        if (!inp.matches("-?[0-9]+(\\.([0-9]+))?\\,-?([0-9]+)(\\.([0-9]+))?")) {
             return new double[] {0,0};
         }
         String[] scoord = inp.split(",");

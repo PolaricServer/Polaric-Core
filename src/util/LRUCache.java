@@ -12,7 +12,7 @@ public class LRUCache<T> {
     public LRUCache(int capacity)
     {
         _capacity = capacity;
-        _cache = new LinkedHashMap<String, T> (capacity + 10)  {
+        _cache = new LinkedHashMap<String, T> (capacity + 10, 0.75f, true)  {
             @Override
             protected boolean removeEldestEntry(Map.Entry eldest) {
                 return size() > _capacity;
