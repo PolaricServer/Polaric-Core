@@ -167,6 +167,15 @@ public abstract class ServerBase
       { return AuthService.getAuthInfo(ctx); }
 
       
+    
+    protected String clientIpAddr(Context ctx) {
+        var ip = ctx.header("X-Forwarded-For"); 
+        if (ip==null)
+            ip = ctx.ip();
+        ip = ip.split(",")[0];
+        return ip;
+    }
+    
       
     /** 
      * Send a system notification to a user. 

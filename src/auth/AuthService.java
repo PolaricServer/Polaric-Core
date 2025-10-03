@@ -187,11 +187,20 @@ public class AuthService {
     /**
      * Return authorization status (as JSON)
      */
-    public static void authStatus(Context ctx) {
-        AuthInfo auth = new AuthInfo(_conf, new JavalinWebContext(ctx));
-        ctx.json(auth);
-    }
+   public static void authStatus(Context ctx) {
+      AuthInfo auth = new AuthInfo(_conf, new JavalinWebContext(ctx));
+      ctx.json(auth);
+   }
 
+   
+   /* Check if request has been forwarded by a proxy */
+   private String ipAddr(Context ctx) {
+      var ip = ctx.header("X-Forwarded-For"); 
+      if (ip==null)
+         ip = ctx.ip(); 
+      ip = ip.split(",")[0];
+      return ip;
+   }
     
     /* 
      * This returns a key, be sure that it is only sent on encrypted channels in production 
@@ -208,7 +217,7 @@ public class AuthService {
          key = SecUtils.b64encode(SecUtils.getRandom(48)); // Gives 64 bytes when encoded 
       
       _hmac.setUserKey(userid, key);
-      _log.log("Successful login from: "+ctx.ip()+", userid="+ userid);
+      _log.log("Successful login from: "+ipAddr(ctx)+", userid="+ userid);
       ctx.result(key);
     }
     
