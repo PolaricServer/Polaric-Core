@@ -1,6 +1,6 @@
-# Arctic-Core Framework
+# Polaric-Core Framework
 
-*Arctic-Core* is a flexible framework for building secure servers with REST APIs and websocket communication. It originated from the *Polaric-Aprsd* codebase and is designed to support modern authentication, authorization, and real-time messaging patterns.
+*Polaric-Core* is a flexible framework for building secure servers with REST APIs and websocket communication. It originated from the *Polaric-Aprsd* codebase and is designed to support modern authentication, authorization, and real-time messaging patterns.
 
 ## Features
 
@@ -25,11 +25,11 @@
 
 **Example Application**
 
-   See [`arctic-core-example`](https://github.com/PolaricServer/arctic-core-example) for a minimal server implementation.
+   See [`polaric-core-example`](https://github.com/PolaricServer/polaric-core-example) for a minimal server implementation.
 
 ## Documentation
 
-Is work-in-progress. See the [Javadoc](https://sarhack.no/apidocs/arctic-core/),the [ServerConfig interface](https://github.com/PolaricServer/Arctic-Core/blob/main/doc/serverconfig.md) and the [Security Model](https://github.com/PolaricServer/Arctic-Core/blob/main/doc/security.model.md).
+Is work-in-progress. See the [Javadoc](https://sarhack.no/apidocs/polaric-core/),the [ServerConfig interface](https://github.com/PolaricServer/Polaric-Core/blob/main/doc/serverconfig.md) and the [Security Model](https://github.com/PolaricServer/Polaric-Core/blob/main/doc/security.model.md).
 
 ## Contributing
 
