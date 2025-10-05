@@ -1,10 +1,10 @@
 # The Server Config interface
  
- The [*ServerConfig*](https://sarhack.no/apidocs/arctic-core/no/arctic/core/ServerConfig.html) interface in Arctic-Core defines the central contract for server configuration and management. Its purpose is to standardize how core server implementation components access configuration properties, logging, web server integration, etc. 
+ The [*ServerConfig*](https://sarhack.no/apidocs/polaric-core/no/polaric/core/ServerConfig.html) interface in Arctic-Core defines the central contract for server configuration and management. Its purpose is to standardize how core server implementation components access configuration properties, logging, web server integration, etc. 
 
 ## Usage by Applications:
 
-Applications typically implement or extend the *ServerConfig* interface (for example, via the [*ConfigBase*](https://sarhack.no/apidocs/arctic-core/no/arctic/core/ConfigBase.html) abstract class) to provide concrete configuration logic. Application code can then access configuration and core services through ServerConfig, such as:
+Applications typically implement or extend the *ServerConfig* interface (for example, via the [*ConfigBase*](https://sarhack.no/apidocs/polaric-core/no/polaric/core/ConfigBase.html) abstract class) to provide concrete configuration logic. Application code can then access configuration and core services through ServerConfig, such as:
 
 - Reading/writing configuration values.
 - Managing users and groups.
@@ -25,7 +25,7 @@ The recommended way to implement the methods of the *ServerConfig* interface in 
   For any methods in ServerConfig not fully implemented in ConfigBase (such as *properties()*, *getWebserver()*, *addShutdownHandler()*, etc.), provide concrete implementations in your subclass.
 
 - **Integrate with application components:**  
-  Connect your implementations to actual web server, user database, and pub/sub systems as needed. The [WebServer](https://sarhack.no/apidocs/arctic-core/no/arctic/core/httpd/WebServer.html) class is an example implementation of the [*ServerConfig.Web*](https://sarhack.no/apidocs/arctic-core/no/arctic/core/ServerConfig.Web.html) interface.
+  Connect your implementations to actual web server, user database, and pub/sub systems as needed. The [WebServer](https://sarhack.no/apidocs/polaric-core/no/polaric/core/httpd/WebServer.html) class is an example implementation of the [*ServerConfig.Web*](https://sarhack.no/apidocs/polaric-core/no/polaric/core/ServerConfig.Web.html) interface.
 
 - **Use dependency injection:**  
   Pass instances of your *ServerConfig* interface to application modules that need access to configuration, logging, or server services.
