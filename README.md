@@ -15,13 +15,21 @@
 - **AGPL v3 Licensed:** Free and open source.
 
 ## Getting Started
+Add as a dependency in your Maven `pom.xml`.
+   ```shell
+   <dependency>
+      <groupId>no.polaric</groupId>
+      <artifactId>polaric-core</artifactId>
+      <version>1.0</version>
+   </dependency>
+   ```
 
 **Build & Install Locally**
    ```shell
    mvn package
    mvn install
    ```
-   Then add as a dependency in your Maven `pom.xml`.
+   And, if necessary, modify the dependences in projects that use this. 
 
 **Example Application**
 
