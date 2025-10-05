@@ -26,11 +26,10 @@
 
   <scm>
     <url>https://github.com/PolaricServer/Polaric-Core</url>
-    <connection>scm:git:git://github.com/PolaricServer/Polaric-Core.git</connection>
-    <developerConnection>scm:git:ssh://github.com:PolaricServer/Polaric-Core.git</developerConnection>
+    <connection>scm:git:https://github.com/PolaricServer/Polaric-Core.git</connection>
+    <developerConnection>scm:git:git@github.com:PolaricServer/Polaric-Core.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
-  
   
   <developers>
     <developer>
@@ -41,19 +40,6 @@
     </developer>
   </developers>
 
-  <distributionManagement>
-
-        <snapshotRepository>
-			<id>ossrh</id>
-			<url>https://ossrh-staging-api.central.sonatype.com/content/repositories/snapshots</url>
-		</snapshotRepository>
-		<repository>
-			<id>ossrh</id>
-			<url>https://ossrh-staging-api.central.sonatype.com/service/local/staging/deploy/maven2/</url>
-    </repository>
-    
-  </distributionManagement>
-  
   
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
