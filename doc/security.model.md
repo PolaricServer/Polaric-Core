@@ -1,5 +1,5 @@
  
-# Arctic Core Security Model
+# Polaric Core Security Model
 
 Arctic Core provides a robust, flexible security model for Java-based server applications, focusing on authentication, authorization, and session management. The framework leverages [Javalin](https://javalin.io/) for web endpoints and [Pac4J](https://www.pac4j.org/) for security integration, allowing developers to build REST and websocket services with fine-grained access control.
 
@@ -7,8 +7,8 @@ Arctic Core provides a robust, flexible security model for Java-based server app
 
 Arctic Core supports multiple authentication mechanisms, configured via Pac4J "Clients":
 
-- **[Arctic-HMAC Authentication](https://github.com/PolaricServer/Arctic-Core/blob/main/doc/arctic-hmac.md):** This mechanism uses a shared secret for each user (session-key) or device (static key). The client includes a username, a nonce, and a HMAC digest in the `Authorization` header (see [`HmacAuthenticator`](https://sarhack.no/apidocs/arctic-core/no/arctic/core/auth/HmacAuthenticator.html)). This enables stateless authentication suitable for REST APIs, websocket connections, and server-to-server communication.
-- **Username/Password Authentication:** Supports standard login forms using a local password file ([`PasswordFileAuthenticator`](https://sarhack.no/apidocs/arctic-core/no/arctic/core/auth/PasswordFileAuthenticator.html)). Passwords are securely hashed and checked at login.
+- **[Arctic-HMAC Authentication](https://github.com/PolaricServer/Polaric-Core/blob/main/doc/arctic-hmac.md):** This mechanism uses a shared secret for each user (session-key) or device (static key). The client includes a username, a nonce, and a HMAC digest in the `Authorization` header (see [`HmacAuthenticator`](https://sarhack.no/apidocs/polaric-core/no/polaric/core/auth/HmacAuthenticator.html)). This enables stateless authentication suitable for REST APIs, websocket connections, and server-to-server communication.
+- **Username/Password Authentication:** Supports standard login forms using a local password file ([`PasswordFileAuthenticator`](https://sarhack.no/apidocs/polaric-core/no/polaric/core/auth/PasswordFileAuthenticator.html)). Passwords are securely hashed and checked at login.
 - **Extensible Mechanisms:** Additional Pac4J-supported mechanisms (OAuth, SAML, etc.) can be added as needed.
 
 ## Authorization
