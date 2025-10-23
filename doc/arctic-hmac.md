@@ -1,7 +1,7 @@
  
 # Arctic-HMAC Authentication Mechanism
 
-Arctic-HMAC is a stateless, secure authentication mechanism provided by the Arctic Core framework. It is designed for both REST APIs and websocket communication, and is well-suited for authenticating users, devices, and server-to-server connections with minimal overhead. Arctic-HMAC is implemented via the `HmacAuthenticator` class and builds upon standard HMAC-SHA256 cryptography.
+Arctic-HMAC is a stateless, secure authentication mechanism provided by the Arctic Core framework. It is designed for both REST APIs and websocket communication, and is well-suited for authenticating users, devices, and server-to-server connections with minimal overhead. Arctic-HMAC is implemented via the `HmacAuthenticator` class and builds upon standard HMAC-SHA256 cryptographic hashes.
 
 ## Key Concepts
 
