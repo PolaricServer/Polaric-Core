@@ -30,6 +30,7 @@ import org.pac4j.core.profile.CommonProfile;
 import org.pac4j.jee.context.session.*;
 import org.pac4j.javalin.*;
 import java.util.Optional;
+import java.util.Set;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 
@@ -181,6 +182,9 @@ public class AuthService {
    }
    public GroupDb groupDb() {
       return _groups; 
+   }
+   public Set<String> getUserLogins() {
+      return _hmac.getUserLogins();
    }
    
    
