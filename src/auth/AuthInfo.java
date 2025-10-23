@@ -113,6 +113,9 @@ public class AuthInfo {
      * Callback-functions on the webserver are called when sessions are  
      * opened and closed. These can be specified (as lambda-functions) by the 
      * application program using WebServer class: onLogin() and onLogout(), 
+     * 
+     * @param conf Server config object. 
+     * @param ws Session notifier (for callback)
      */
     
     public static void init(ServerConfig conf, SesNotifier ws) {
@@ -206,6 +209,9 @@ public class AuthInfo {
     }
     
     
+    /**
+     * Return true if user is logged in.
+     */
     public boolean login() 
         { return userid != null; }
        
@@ -276,6 +282,9 @@ public class AuthInfo {
     /**
      * Constructor. Gets userid from a user profile on request and sets authorisations. 
      * called from AuthService for each request.
+     * @param conf Server config object
+     * @param u User object (see User.java)
+     * @param g Group object (see Group.java)
      */
      
     public AuthInfo(ServerConfig conf, User u, Group g) {
@@ -291,6 +300,8 @@ public class AuthInfo {
     
     /**
      * Constructor. Gets info from web context.
+     * @param conf SErver config object.
+     * @param context Session context
      */
     public AuthInfo(ServerConfig conf, WebContext context) 
     {

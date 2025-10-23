@@ -25,6 +25,9 @@ import no.polaric.core.util.SecUtils;
 import no.polaric.core.ServerConfig;
 
 
+
+/** Client for REST services */
+
 public class RestClient {
 
     private ServerConfig _conf;  

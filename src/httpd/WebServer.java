@@ -25,9 +25,8 @@ import org.pac4j.core.config.Config;
 import org.pac4j.javalin.*;
 import java.util.*;
 
- 
 
-/*
+/**
  * Abstract base class for webserver setup. 
  * A comcrete application should subclass this.  
  */
@@ -65,7 +64,7 @@ public abstract class WebServer implements ServerConfig.Web {
         
         _app = Javalin.create( config -> {
             _auth = new AuthService(conf);;
-        
+    
             /* Serve static files. */
             if (stpath != null && stdir != null)
                 config.staticFiles.add( sf -> {

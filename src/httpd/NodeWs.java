@@ -104,12 +104,12 @@ public class NodeWs extends WsNotifier
     }  
    
    
-   
+    /** Get set of subcriber-ids */
     public Set<String> getSubscribers() {
         return _subscribers.keySet();
     }
     
-    
+    /** Remove a subscriber */
     public void removeSubscriber(String id) {
         _subscribers.remove(id);
     }
@@ -119,16 +119,6 @@ public class NodeWs extends WsNotifier
         _handler = h;
     }
     
-   
-    /**
-     * Websocket close handler.
-     */
-  //  public void onClose(WsContext conn, int statusCode, String reason) {
-  //     String user = _getUid(conn);
-  //     closeSes(conn);
-  //     Client c = (Client) _clients.get(user);
-  //     _subscribers.remove(c.nodeid);
-  //  }
    
     
     

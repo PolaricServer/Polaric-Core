@@ -23,6 +23,8 @@ import io.javalin.Javalin;
 import java.util.*;
 
 
+/** Rest API services to be provided by default. */
+
 public class Services extends ServerBase {
     
     public Services(ServerConfig conf) {

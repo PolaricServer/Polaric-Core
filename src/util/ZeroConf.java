@@ -24,7 +24,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.*;
 
-
+/**
+ * Zeroconf/mDNS helper
+ */
 public class ZeroConf 
 { 
 

@@ -38,14 +38,14 @@ import java.util.Optional;
 
 
 
-/*
+/**
  * The security configuration must be defined via a Config object.
  * Consists of: 
  * -  Clients (authentication mechanisms)
  * -  Authenticators (credentials validation)
  * -  Authorizers (authorization checks)
  * -  Matchers
-*
+ *
  * A Client represents a web authentication mechanism. It performs the login process and returns 
  * (if successful) a user profile. HTTP clients require an Authenticator to validate the credentials.
  *
@@ -55,13 +55,17 @@ import java.util.Optional;
  * Matcher: The “security filter” is in charge of protecting URL, requesting authentication and 
  * optionally authorization.
  */
-
  
 public class AuthConfig implements ConfigFactory {
 
     Authenticator _hmac; 
     Authenticator _passwds;
     
+    /**
+     * AuthConfig constructor. 
+     * @param pw Password authenticator
+     * @param hmauth Arctic Hmac authenticator
+     */
     public AuthConfig(Authenticator pw, Authenticator hmauth) {
         _passwds = pw;
         _hmac = hmauth;

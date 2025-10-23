@@ -22,7 +22,7 @@ import io.javalin.websocket.*;
 
 
 
-
+/** API for the Node websocket services */
 public class NodeWsApi<T> {
 
     private NodeWs _children;

@@ -34,8 +34,8 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 
 
-/*
- * Abstract base class for REST API implementations, etc.. 
+/**
+ * Abstract base class for REST API implementations, etc. 
  * Contains some useful methods..
  */
 

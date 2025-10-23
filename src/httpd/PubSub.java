@@ -41,13 +41,14 @@ import io.javalin.websocket.*;
 public class PubSub extends WsNotifier implements ServerConfig.PubSub
 {
 
+    /** Client connection to publish/subscribe service.*/
     public class Client extends WsNotifier.Client
     {   
         public Client(WsContext ctx) { 
             super(ctx); 
         }
              
-       
+        /** Handle incoming text frame. */
         @Override synchronized public void handleTextFrame(String text) {
             _conf.log().debug("PubSub", "Client "+sesId(_ctx)+", userid="+userName()+" : " + text);
             String[] parms = text.split(",", 2);
