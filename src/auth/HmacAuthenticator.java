@@ -179,13 +179,14 @@ public class HmacAuthenticator implements Authenticator {
                         String userid = x[0].trim();
                         String key = x[1].trim();
                         _keymap.put(userid, key);
-                        if (dev)
+                        if (dev) 
                             _devices.add(userid);
                         else {
                             long ts = (new Date()).getTime();
                             if (x.length >= 3 && x[2].matches("[0-9]+"))
                                 ts = Long.parseLong(x[2].trim());
                             _userlogins.put(userid, ts);
+                            expireUserKey(userid);
                         }
                     }
                     else

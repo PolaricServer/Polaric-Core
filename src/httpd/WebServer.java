@@ -167,9 +167,8 @@ public abstract class WebServer implements ServerConfig.Web {
      */
     public SortedSet<String> loginUsers() {
         SortedSet<String> u = new TreeSet<String>();
-        for (WsNotifier.Client c :_psub.clients())
-            if (c.userName() != null)
-                u.add(c.userName());
+        for (String c :_auth.getUserLogins())
+            u.add(c);
         return u;
     }
 
