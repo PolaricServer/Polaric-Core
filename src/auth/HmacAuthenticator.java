@@ -135,6 +135,11 @@ public class HmacAuthenticator implements Authenticator {
     }
     
     
+    public Set<String> getUserLogins() {
+        return _userlogins.keySet();
+    }
+    
+    
     
     /**
      * Load keys from file.
