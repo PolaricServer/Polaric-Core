@@ -55,7 +55,7 @@ public class SecUtils
     public final static byte[] getRandom(int size)
     {
         if (size < 1)
-            return null; // OOPS: Is this secure? 
+            return null; 
         
         byte[] k = new byte[size];
         _rand.nextBytes(k);
@@ -87,22 +87,28 @@ public class SecUtils
     
     /**
      * Computes MD5 hash.
-     * @deprecated MD5 is cryptographically broken and should not be used for security purposes.
-     * Use xDigest() for SHA-256 instead. This method is retained only for compatibility
+     * @deprecated MD5 is cryptographically broken and should not normally be used for security purposes.
+     * Use xDigest() for SHA-256 instead. This method is retained for compatibility
      * with legacy systems that require MD5.
      */
     @Deprecated
     public final static byte[] digest( byte[] bytes, String txt )
         { return _digest(bytes, txt, "MD5"); }
     
-    /* Computes SHA-256 hash */
+    
+    
+    
+    /** Compute SHA-256 hash. */
     public final static byte[] xDigest( byte[] bytes, String txt )
         { return _digest(bytes, txt, "SHA-256"); }
         
       
 
       
-      
+    /**
+     * Compute a HMAC SHA256 from data and a key.
+     * @return The hmac represented as a byte array.
+     */
     public final static byte[] hmac(String data, String key)
     {
         try {
@@ -127,9 +133,18 @@ public class SecUtils
     public final static String digestHex(String txt)
         {return b2hex(digest(null, txt));}
         
+        
+    /**
+     * Compute a (SHA256) hash from the text, represented as a hexadecimal string. 
+     */
     public final static String xDigestHex(String txt)
         {return b2hex(xDigest(null, txt));}
 
+        
+        
+    /**
+     * Compute a HMAC SHA256 from the text, represented as a hexadecimal string. 
+     */
     public final static String hmacHex(String txt, String key)
         {return b2hex(hmac(txt, key)); }
         
@@ -148,13 +163,26 @@ public class SecUtils
        return d.substring(0,n); 
     }
     
+    
+    /**
+     * Base 64 encoded digest (SHA256).
+     * Returns n first characters of digest, encoded using
+     * the Base 64 method.
+     */
     public final static String xDigestB64(String txt, int n)
     {
        Base64 b64 = new Base64();
        String d = b64.encode(xDigest(null, txt));
        return d.substring(0,n); 
     }
+    
+    
      
+    /**
+     * Base 64 encoded HMAC SHA256.
+     * Returns n first characters of digest, encoded using
+     * the Base 64 method.
+     */
     public final static String hmacB64(String txt, String key, int n)
     {
        Base64 b64 = new Base64();
@@ -171,6 +199,8 @@ public class SecUtils
         Base64 b64 = new Base64();
         return b64.encode(x);
     }
+    
+    
     public final static byte[] b64decode(String txt) 
     {
         Base64 b64 = new Base64();
@@ -212,6 +242,9 @@ public class SecUtils
     
     
     
+    /**
+     * Escape a text-string for use as a part of a regular expression. 
+     */
     public static String escape4regex(String x) {
         return x.replaceAll("([\\$\\^\\*\\+\\?\\.\\(\\)\\[\\]\\{\\}\\\\])", "\\\\$1");
     }
