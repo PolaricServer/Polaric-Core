@@ -251,9 +251,15 @@ public class LocalUsers implements UserDb
             else {
                 _conf.log().warn("LocalUsers", "Couldn't update passwd: Internal server problem");
                 String output = result.getOutput();
+                String error = result.getError();
                 if (!output.isEmpty()) {
                     for (String line : output.split("\n")) {
-                        System.out.println("  "+line);
+                        _conf.log().warn("LocalUsers", "  Output: "+line);
+                    }
+                }
+                if (!error.isEmpty()) {
+                    for (String line : error.split("\n")) {
+                        _conf.log().warn("LocalUsers", "  Error: "+line);
                     }
                 }
             }

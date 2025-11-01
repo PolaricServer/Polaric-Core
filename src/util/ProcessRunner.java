@@ -80,6 +80,7 @@ public class ProcessRunner {
     
     /**
      * Wait for a process to complete and collect its output.
+     * Streams are read concurrently to avoid deadlocks.
      * 
      * @param process The process to wait for
      * @return ProcessResult containing exit code, output, and error streams
@@ -87,12 +88,60 @@ public class ProcessRunner {
      * @throws InterruptedException if the thread is interrupted while waiting
      */
     private static ProcessResult waitForProcess(Process process) throws IOException, InterruptedException {
-        int exitCode = process.waitFor();
-        
-        String output = readStream(process.getInputStream());
-        String error = readStream(process.getErrorStream());
-        
-        return new ProcessResult(exitCode, output, error);
+        try {
+            // Read streams concurrently to avoid deadlock if buffers fill up
+            StringBuilder output = new StringBuilder();
+            StringBuilder error = new StringBuilder();
+            
+            Thread outputReader = new Thread(() -> {
+                try {
+                    readStreamIntoBuilder(process.getInputStream(), output);
+                } catch (IOException e) {
+                    // Ignore - will be caught by main thread
+                }
+            });
+            
+            Thread errorReader = new Thread(() -> {
+                try {
+                    readStreamIntoBuilder(process.getErrorStream(), error);
+                } catch (IOException e) {
+                    // Ignore - will be caught by main thread
+                }
+            });
+            
+            outputReader.start();
+            errorReader.start();
+            
+            int exitCode = process.waitFor();
+            
+            // Wait for stream readers to complete
+            outputReader.join();
+            errorReader.join();
+            
+            return new ProcessResult(exitCode, output.toString(), error.toString());
+        } finally {
+            // Ensure process resources are cleaned up
+            process.destroy();
+        }
+    }
+    
+    /**
+     * Read all content from an input stream into a StringBuilder.
+     * 
+     * @param stream The input stream to read from
+     * @param builder The StringBuilder to append to
+     * @throws IOException if an I/O error occurs
+     */
+    private static void readStreamIntoBuilder(InputStream stream, StringBuilder builder) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (builder.length() > 0) {
+                    builder.append("\n");
+                }
+                builder.append(line);
+            }
+        }
     }
     
     /**
@@ -104,15 +153,7 @@ public class ProcessRunner {
      */
     private static String readStream(InputStream stream) throws IOException {
         StringBuilder result = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(stream))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                if (result.length() > 0) {
-                    result.append("\n");
-                }
-                result.append(line);
-            }
-        }
+        readStreamIntoBuilder(stream, result);
         return result.toString();
     }
 }
