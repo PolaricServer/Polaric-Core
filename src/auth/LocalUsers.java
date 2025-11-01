@@ -19,6 +19,7 @@
 package no.polaric.core.auth;
 import no.polaric.core.*; 
 import no.polaric.core.httpd.*;
+import no.polaric.core.util.ProcessRunner;
 import java.util.*; 
 import java.io.Serializable;
 import java.io.*;
@@ -205,16 +206,15 @@ public class LocalUsers implements UserDb
         _conf.log().debug("LocalUsers", "remove: user '"+username+"'");
          var cmd = "/usr/bin/htpasswd -D /etc/polaric-aprsd/passwd "+username;
          try {
-            var p = Runtime.getRuntime().exec(cmd);
-            var res = p.waitFor();
+            var result = ProcessRunner.execute(cmd);
              
-            if (res == 0) {
+            if (result.getExitCode() == 0) {
                 _authService.reloadPasswds();
                 _conf.log().info("LocalUsers", "Password deleted for user: '"+username+"'"); 
                 return;
             }
             else 
-                _conf.log().warn("LocalUsers", "Couldn't delete passwd: error="+res);
+                _conf.log().warn("LocalUsers", "Couldn't delete passwd: error="+result.getExitCode());
         } catch (IOException e) {
             _conf.log().warn("LocalUsers", "Couldn't delete passwd: "+e.getMessage());
         } catch (InterruptedException e) {}
@@ -228,8 +228,8 @@ public class LocalUsers implements UserDb
     
         var cmd = "/usr/bin/htpasswd -b /etc/polaric-aprsd/passwd "+username+" "+passwd;
         try {
-            var p = Runtime.getRuntime().exec(cmd);
-            var res = p.waitFor();
+            var result = ProcessRunner.execute(cmd);
+            var res = result.getExitCode();
              
             if (res == 0) {
                 _authService.reloadPasswds();
@@ -250,10 +250,22 @@ public class LocalUsers implements UserDb
                 _conf.log().warn("LocalUsers", "Couldn't update passwd: Invalid password file");
             else {
                 _conf.log().warn("LocalUsers", "Couldn't update passwd: Internal server problem");
-                BufferedReader bri = new BufferedReader(new InputStreamReader(p.getInputStream()));
-                String line;
-                while ((line = bri.readLine()) != null)
-                    System.out.println("  "+line);
+                String output = result.getOutput();
+                String error = result.getError();
+                if (!output.trim().isEmpty()) {
+                    for (String line : output.split("\n")) {
+                        if (!line.trim().isEmpty()) {
+                            _conf.log().warn("LocalUsers", "  Output: "+line);
+                        }
+                    }
+                }
+                if (!error.trim().isEmpty()) {
+                    for (String line : error.split("\n")) {
+                        if (!line.trim().isEmpty()) {
+                            _conf.log().warn("LocalUsers", "  Error: "+line);
+                        }
+                    }
+                }
             }
                 
                 
