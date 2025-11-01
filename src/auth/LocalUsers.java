@@ -203,7 +203,7 @@ public class LocalUsers implements UserDb
         _users.remove(username);
         _dirty = true;
         _conf.log().debug("LocalUsers", "remove: user '"+username+"'");
-         var cmd = "/usr/bin/sudo /usr/bin/htpasswd -D /etc/polaric-aprsd/passwd "+username;
+         var cmd = "/usr/bin/htpasswd -D /etc/polaric-aprsd/passwd "+username;
          try {
             var p = Runtime.getRuntime().exec(cmd);
             var res = p.waitFor();
@@ -226,7 +226,7 @@ public class LocalUsers implements UserDb
     
     public synchronized boolean updatePasswd(String username, String passwd) {  
     
-        var cmd = "/usr/bin/sudo /usr/bin/htpasswd -b /etc/polaric-aprsd/passwd "+username+" "+passwd;
+        var cmd = "/usr/bin/htpasswd -b /etc/polaric-aprsd/passwd "+username+" "+passwd;
         try {
             var p = Runtime.getRuntime().exec(cmd);
             var res = p.waitFor();
@@ -236,6 +236,12 @@ public class LocalUsers implements UserDb
                 _conf.log().info("LocalUsers", "Password updated for user: '"+username+"'"); 
                 return true;
             }
+            else if (res == 1)
+                _conf.log().warn("LocalUsers", "Couldn't update passwd: File access problem (permissions)");
+            else if (res == 2)
+                _conf.log().warn("LocalUsers", "Couldn't update passwd: Syntax error");
+            else if (res == 4)
+                _conf.log().warn("LocalUsers", "Couldn't update passwd: Operation interrupted");
             else if (res == 5)
                 _conf.log().warn("LocalUsers", "Couldn't update passwd: Input is too long");
             else if (res == 6)
