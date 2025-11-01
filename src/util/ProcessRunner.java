@@ -143,17 +143,4 @@ public class ProcessRunner {
             }
         }
     }
-    
-    /**
-     * Read all content from an input stream.
-     * 
-     * @param stream The input stream to read from
-     * @return The content as a string
-     * @throws IOException if an I/O error occurs
-     */
-    private static String readStream(InputStream stream) throws IOException {
-        StringBuilder result = new StringBuilder();
-        readStreamIntoBuilder(stream, result);
-        return result.toString();
-    }
 }
