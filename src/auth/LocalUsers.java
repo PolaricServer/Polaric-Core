@@ -203,7 +203,6 @@ public class LocalUsers implements UserDb
     public synchronized void remove(String username) {
         _users.remove(username);
         _dirty = true;
-        _conf.log().debug("LocalUsers", "remove: user '"+username+"'");
          var cmd = "/usr/bin/htpasswd -D /etc/polaric-aprsd/passwd "+username;
          try {
             var result = ProcessRunner.execute(cmd);
