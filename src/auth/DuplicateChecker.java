@@ -29,20 +29,23 @@
  public class DuplicateChecker {
     private NanoCuckooFilter _cfilter1;
     private NanoCuckooFilter _cfilter2; 
-    private int _capacity;
+    private int _maxcap;
+    private int _fill;
+    private int _num;
     
     public DuplicateChecker(int capacity) {
-        _capacity = capacity;
-        _cfilter1 = new NanoCuckooFilter.Builder( capacity/2+1 ).build();
+        _fill = capacity/2+1;
+        _maxcap = (int) Math.round(_fill * 1.3);
+        _cfilter1 = new NanoCuckooFilter.Builder( _maxcap ).withFingerprintBits(16).build();
         _cfilter2 = null;
     }
     
     public void add(String val) {
-        if (! _cfilter1.insert(val)) {
+        if (_num++ >= _fill) {
             _cfilter2 = _cfilter1;
-            _cfilter1 = new NanoCuckooFilter.Builder( _capacity/2+1 ).build();
-            _cfilter1.insert(val);
+            _cfilter1 = new NanoCuckooFilter.Builder( _maxcap ).withFingerprintBits(16).build();
         }
+        _cfilter1.insert(val);
     }
     
     public boolean contains(String val) {
