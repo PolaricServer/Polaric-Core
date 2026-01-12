@@ -176,6 +176,14 @@ public class SecUtils
        return d.substring(0,n); 
     }
     
+
+
+    public final static String xDigestB91(String txt, int n)
+    {
+        Base91.encode(xDigest(null, txt));
+        return d.substring(0,n);
+    }
+
     
      
     /**
@@ -192,7 +200,14 @@ public class SecUtils
     
      
      
-     
+    public final static String hmacB91(String txt, String key, int n)
+    {
+        String Base91.encode(hmac(txt, key));
+        return d.substring(0,n);
+    }
+
+
+
     /* FIXME: Can we use Java's own b64 implementation?  Must test! */
     public final static String b64encode(byte[] x) 
     {
@@ -200,6 +215,7 @@ public class SecUtils
         return b64.encode(x);
     }
     
+
     
     public final static byte[] b64decode(String txt) 
     {
@@ -208,8 +224,20 @@ public class SecUtils
     }
     
     
-     
+
+    public final static String b91encode(byte[] x)
+    {
+        return Base91.encode(x);
+    }
     
+
+    public final static byte[] b91decode(String x)
+    {
+        return Base91.decode(x);
+    }
+
+
+
     /**
      * Hexadecimal representation of a byte array.
      */
