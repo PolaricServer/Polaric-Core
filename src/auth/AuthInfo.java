@@ -36,8 +36,8 @@ import org.pac4j.javalin.*;
  */
 public class AuthInfo {
 
-    /* Expire time in minutes. Set to one week */
-    public static final int USERSES_EXPIRE = 60 * 24 * 7;
+    /* Expire time in minutes. Set to 4 days */
+    public static final int USERSES_EXPIRE = 60 * 24 * 4;
     
     
     /* 
@@ -171,7 +171,7 @@ public class AuthInfo {
                         /* Inform system and other PS instances of user logout. */
                         ((WebServer) conf.getWebserver()).notifyLogout(a.userid);
 
-                        /* Put user-session on expire. Expire after 1 week */
+                        /* Put user-session on expire. Expire after 4 days */
                         a.userses.expire = (new Date()).getTime() + 1000 * 60 * USERSES_EXPIRE; 
                         gcses.add(a.userses);
                             
