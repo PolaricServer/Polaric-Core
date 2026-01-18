@@ -180,7 +180,7 @@ public class SecUtils
 
     public final static String xDigestB91(String txt, int n)
     {
-        Base91.encode(xDigest(null, txt));
+        String d = Base91.encode(xDigest(null, txt));
         return d.substring(0,n);
     }
 
@@ -202,7 +202,7 @@ public class SecUtils
      
     public final static String hmacB91(String txt, String key, int n)
     {
-        String Base91.encode(hmac(txt, key));
+        String d = Base91.encode(hmac(txt, key));
         return d.substring(0,n);
     }
 
