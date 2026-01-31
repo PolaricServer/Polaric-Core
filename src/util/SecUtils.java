@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2009-2025 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
+ * Copyright (C) 2009-2026 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -20,7 +20,7 @@ package no.polaric.core.util;
 import java.io.*;
 import java.util.*;
 import java.security.*;
-import com.mindprod.base64.Base64;
+import java.util.Base64;
 import javax.crypto.*;
 import javax.crypto.spec.*;
 import java.security.NoSuchAlgorithmException;
@@ -158,8 +158,7 @@ public class SecUtils
     @Deprecated
     public final static String digestB64(String txt, int n)
     {
-       Base64 b64 = new Base64();
-       String d = b64.encode(digest(null, txt));
+       String d = b64encode(digest(null, txt));
        return d.substring(0,n); 
     }
     
@@ -171,8 +170,7 @@ public class SecUtils
      */
     public final static String xDigestB64(String txt, int n)
     {
-       Base64 b64 = new Base64();
-       String d = b64.encode(xDigest(null, txt));
+       String d = b64encode(xDigest(null, txt));
        return d.substring(0,n); 
     }
     
@@ -193,8 +191,7 @@ public class SecUtils
      */
     public final static String hmacB64(String txt, String key, int n)
     {
-       Base64 b64 = new Base64();
-       String d = b64.encode(hmac(txt, key));
+       String d = b64encode(hmac(txt, key));
        return d.substring(0,n); 
     }
     
@@ -208,19 +205,18 @@ public class SecUtils
 
 
 
-    /* FIXME: Can we use Java's own b64 implementation?  Must test! */
     public final static String b64encode(byte[] x) 
     {
-        Base64 b64 = new Base64();
-        return b64.encode(x);
+        Base64.Encoder encoder = Base64.getEncoder();
+        return encoder.encodeToString(x);
     }
     
 
     
     public final static byte[] b64decode(String txt) 
     {
-        Base64 b64 = new Base64();
-        return b64.decode(txt);
+        Base64.Decoder decoder = Base64.getDecoder();
+        return decoder.decode(txt);
     }
     
     
