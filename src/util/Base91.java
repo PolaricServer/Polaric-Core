@@ -165,8 +165,12 @@ public class Base91 {
             digits[i] = DECODE_TABLE[c];
         }
         
-        // Calculate the size of the result
-        int maxBytes = (int) Math.ceil(nonZeroPart.length() * 1.88 / 2) + 1;
+        // Calculate the size of the result buffer
+        // For n base-91 digits, the maximum value is 91^n - 1
+        // The number of bytes needed is ceil(log(91^n) / log(256)) = ceil(n * log(91) / log(256))
+        // log(91)/log(256) ≈ 0.813, so theoretically we need at most n * 0.813 bytes
+        // We use n (which equals n * 1.0) to ensure adequate space, plus 1 for safety
+        int maxBytes = nonZeroPart.length() + 1;
         byte[] result = new byte[maxBytes];
         int resultLen = 0;
         
