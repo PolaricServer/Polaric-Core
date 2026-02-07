@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2009-2025 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
+ * Copyright (C) 2009-2026 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -32,7 +32,9 @@ package no.polaric.core.util;
  * binary data that needs efficient ASCII representation.
  * 
  * Compatible with the basE91 specification and APRS requirements.
+ * See also: https://github.com/maqifrnswa/Simple-Base91
  */
+ 
 public class Base91 {
     
     /**
