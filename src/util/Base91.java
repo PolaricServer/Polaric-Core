@@ -76,14 +76,14 @@ public class Base91 {
         
         StringBuilder output = new StringBuilder();
         int nbits = 0;
-        long bqueue = 0;
+        int bqueue = 0;  // 32-bit queue matching C implementation
         
         for (byte b : input) {
             nbits += 8;
-            bqueue |= ((long)(b & 0xFF)) << (32 - nbits);
+            bqueue |= (b & 0xFF) << (32 - nbits);
             
             if (nbits > 12) {  // enough bits in queue
-                int val = (int)((bqueue >> (32 - 13)) & 0x1FFF);
+                int val = (bqueue >>> (32 - 13)) & 0x1FFF;
                 bqueue <<= 13;
                 nbits -= 13;
                 output.append((char)(val / BASE + ASCII_OFFSET));
@@ -93,11 +93,11 @@ public class Base91 {
         
         // Finish the queue with remaining bits
         if (nbits > 6) { // put remaining into 2 more bytes
-            int val = (int)((bqueue >> (32 - 13)) & 0x1FFF);
+            int val = (bqueue >>> (32 - 13)) & 0x1FFF;
             output.append((char)(val / BASE + ASCII_OFFSET));
             output.append((char)(val % BASE + ASCII_OFFSET));
         } else if (nbits > 0) { // need 1 more byte
-            int val = (int)((bqueue >> (32 - 6)) & 0x3F);
+            int val = (bqueue >>> (32 - 6)) & 0x3F;
             output.append((char)(val % BASE + ASCII_OFFSET));
         }
         
@@ -124,7 +124,7 @@ public class Base91 {
         int n = 0;
         int val = -1;
         int nbits = 0;
-        long bqueue = 0;
+        int bqueue = 0;  // 32-bit queue matching C implementation
         
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
@@ -140,11 +140,11 @@ public class Base91 {
             } else {
                 val = val * BASE + d;
                 nbits += 13;
-                bqueue |= ((long)val) << (32 - nbits);
+                bqueue |= val << (32 - nbits);
                 
                 // Extract complete bytes from the queue
                 while (nbits > 7) {
-                    output[n++] = (byte)((bqueue >> (32 - 8)) & 0xFF);
+                    output[n++] = (byte)(bqueue >>> (32 - 8));
                     bqueue <<= 8;
                     nbits -= 8;
                 }
@@ -155,8 +155,8 @@ public class Base91 {
         // Handle final odd character if present
         if (val != -1) {
             nbits += 6;
-            bqueue |= ((long)val) << (32 - nbits);
-            output[n++] = (byte)((bqueue >> (32 - 8)) & 0xFF);
+            bqueue |= val << (32 - nbits);
+            output[n++] = (byte)(bqueue >>> (32 - 8));
         }
         
         // Return properly sized result array
