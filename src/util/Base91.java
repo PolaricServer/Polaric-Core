@@ -20,15 +20,18 @@ package no.polaric.core.util;
 /**
  * APRS Base91 encoding/decoding implementation.
  * 
- * APRS Base91 is a simple encoding method used in APRS (Automatic Packet Reporting System)
+ * APRS Base91 (basE91) is an encoding method used in APRS (Automatic Packet Reporting System)
  * for encoding binary data as ASCII text. It uses 91 consecutive ASCII characters
  * from '!' (ASCII 33) to '{' (ASCII 123).
  * 
- * This encoding is used in APRS for compressed position data, telemetry, and other
- * numeric values. Unlike the standard basE91 encoding scheme, APRS Base91 uses
- * straightforward base conversion rather than variable-length encoding.
+ * This implementation uses the basE91 streaming algorithm which encodes binary data
+ * efficiently using variable-length encoding with a bit queue. It processes 13 bits
+ * at a time, encoding them as two base-91 characters.
  * 
- * Compatible with APRS specification.
+ * This encoding is used in APRS for compressed position data, telemetry, and other
+ * binary data that needs efficient ASCII representation.
+ * 
+ * Compatible with the basE91 specification and APRS requirements.
  */
 public class Base91 {
     
@@ -58,11 +61,10 @@ public class Base91 {
     /**
      * Encode binary data to APRS Base91 string.
      * 
-     * Converts the input byte array to a base-91 number representation.
-     * The encoding treats the input as a big-endian unsigned integer and
-     * converts it to base 91 using the APRS character set.
-     * 
-     * Leading zero bytes are preserved by encoding them as '!' characters.
+     * Uses the basE91 streaming algorithm which processes input bytes through
+     * a bit queue. When enough bits are accumulated (>12), it extracts 13 bits
+     * and encodes them as two base-91 characters. This provides efficient
+     * variable-length encoding of binary data.
      * 
      * @param input The binary data to encode
      * @return APRS Base91 encoded string
@@ -72,66 +74,42 @@ public class Base91 {
             return "";
         }
         
-        // Find the first non-zero byte
-        int firstNonZero = 0;
-        while (firstNonZero < input.length && input[firstNonZero] == 0) {
-            firstNonZero++;
-        }
+        StringBuilder output = new StringBuilder();
+        int nbits = 0;
+        int bqueue = 0;  // 32-bit queue (matches C uint32_t); Java int is signed but operations use unsigned semantics
         
-        // If all bytes are zero, return appropriate number of '!' characters
-        if (firstNonZero == input.length) {
-            StringBuilder result = new StringBuilder();
-            for (int i = 0; i < input.length; i++) {
-                result.append('!');
-            }
-            return result.toString();
-        }
-        
-        // Encode leading zeros as '!' characters
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < firstNonZero; i++) {
-            result.append('!');
-        }
-        
-        // Create a working copy of the non-zero portion
-        int nonZeroLength = input.length - firstNonZero;
-        byte[] value = new byte[nonZeroLength];
-        System.arraycopy(input, firstNonZero, value, 0, nonZeroLength);
-        
-        // Convert to base 91 using repeated division
-        StringBuilder digits = new StringBuilder();
-        boolean isZero = false;
-        while (!isZero) {
-            int remainder = 0;
-            isZero = true;
+        for (byte b : input) {
+            nbits += 8;
+            bqueue |= (b & 0xFF) << (32 - nbits);
             
-            // Divide the entire byte array by 91
-            for (int i = 0; i < value.length; i++) {
-                int current = (remainder * 256) + (value[i] & 0xFF);
-                value[i] = (byte) (current / BASE);
-                remainder = current % BASE;
-                
-                if (value[i] != 0) {
-                    isZero = false;
-                }
+            if (nbits > 12) {  // enough bits in queue
+                int val = (bqueue >>> (32 - 13)) & 0x1FFF;
+                bqueue <<= 13;
+                nbits -= 13;
+                output.append((char)(val / BASE + ASCII_OFFSET));
+                output.append((char)(val % BASE + ASCII_OFFSET));
             }
-            
-            // The remainder is the next base-91 digit (from right to left)
-            digits.append((char) (remainder + ASCII_OFFSET));
         }
         
-        // The digits are built in reverse order, so reverse and append
-        result.append(digits.reverse());
-        return result.toString();
+        // Finish the queue with remaining bits
+        if (nbits > 6) { // put remaining into 2 more bytes
+            int val = (bqueue >>> (32 - 13)) & 0x1FFF;
+            output.append((char)(val / BASE + ASCII_OFFSET));
+            output.append((char)(val % BASE + ASCII_OFFSET));
+        } else if (nbits > 0) { // need 1 more byte
+            int val = (bqueue >>> (32 - 6)) & 0x3F;
+            output.append((char)(val % BASE + ASCII_OFFSET));
+        }
+        
+        return output.toString();
     }
     
     /**
      * Decode APRS Base91 string to binary data.
      * 
-     * Converts an APRS Base91 encoded string back to its original binary form.
-     * The decoding treats the input as a base-91 number and converts it to bytes.
-     * 
-     * Leading '!' characters are decoded as zero bytes, preserving the original length.
+     * Uses the basE91 streaming algorithm to decode. Processes characters in pairs,
+     * converting each pair back to 13 bits of data. Handles final odd character
+     * by decoding it as 6 bits.
      * 
      * @param input The APRS Base91 encoded string
      * @return Decoded binary data
@@ -141,73 +119,49 @@ public class Base91 {
             return new byte[0];
         }
         
-        // Count leading '!' characters (which represent leading zero bytes)
-        int leadingZeros = 0;
-        while (leadingZeros < input.length() && input.charAt(leadingZeros) == '!') {
-            leadingZeros++;
-        }
+        // Allocate output buffer - decoded data is typically smaller than encoded
+        byte[] output = new byte[input.length()];
+        int n = 0;
+        int val = -1;
+        int nbits = 0;
+        int bqueue = 0;  // 32-bit queue (matches C uint32_t); Java int is signed but operations use unsigned semantics
         
-        // If the entire string is '!' characters, return that many zero bytes
-        if (leadingZeros == input.length()) {
-            return new byte[leadingZeros];
-        }
-        
-        // Process the non-zero portion
-        String nonZeroPart = input.substring(leadingZeros);
-        
-        // Validate all characters and convert to base-91 digits
-        int[] digits = new int[nonZeroPart.length()];
-        for (int i = 0; i < nonZeroPart.length(); i++) {
-            char c = nonZeroPart.charAt(i);
+        for (int i = 0; i < input.length(); i++) {
+            char c = input.charAt(i);
+            
+            // Validate and decode character
             if (c > 255 || DECODE_TABLE[c] == -1) {
                 throw new IllegalArgumentException("Invalid Base91 character: " + c);
             }
-            digits[i] = DECODE_TABLE[c];
-        }
-        
-        // Calculate the size of the result buffer
-        // For n base-91 digits, the maximum value is 91^n - 1
-        // The number of bytes needed is ceil(log(91^n) / log(256)) = ceil(n * log(91) / log(256))
-        // log(91)/log(256) ≈ 0.813, so theoretically we need at most n * 0.813 bytes
-        // We use n (which equals n * 1.0) to ensure adequate space, plus 1 for safety
-        int maxBytes = nonZeroPart.length() + 1;
-        byte[] result = new byte[maxBytes];
-        int resultLen = 0;
-        
-        // Convert from base 91 to base 256 (bytes)
-        for (int digit : digits) {
-            int carry = digit;
+            int d = DECODE_TABLE[c];
             
-            for (int i = resultLen - 1; i >= 0; i--) {
-                int val = (result[i] & 0xFF) * BASE + carry;
-                result[i] = (byte) (val & 0xFF);
-                carry = val >>> 8;
-            }
-            
-            // Add any remaining carry as new leading bytes
-            while (carry > 0) {
-                if (resultLen >= maxBytes) {
-                    byte[] newResult = new byte[maxBytes * 2];
-                    System.arraycopy(result, 0, newResult, 0, resultLen);
-                    result = newResult;
-                    maxBytes *= 2;
-                }
+            if (val == -1) {
+                val = d; // start next value
+            } else {
+                val = val * BASE + d;
+                nbits += 13;
+                bqueue |= val << (32 - nbits);
                 
-                for (int i = resultLen; i > 0; i--) {
-                    result[i] = result[i - 1];
+                // Extract complete bytes from the queue
+                while (nbits > 7) {
+                    output[n++] = (byte)(bqueue >>> (32 - 8));
+                    bqueue <<= 8;
+                    nbits -= 8;
                 }
-                
-                result[0] = (byte) (carry & 0xFF);
-                carry >>>= 8;
-                resultLen++;
+                val = -1; // mark value complete
             }
         }
         
-        // Create final result with leading zeros
-        byte[] finalResult = new byte[leadingZeros + resultLen];
-        // Leading zeros are already 0 in Java's default initialization
-        System.arraycopy(result, 0, finalResult, leadingZeros, resultLen);
+        // Handle final odd character if present
+        if (val != -1) {
+            nbits += 6;
+            bqueue |= val << (32 - nbits);
+            output[n++] = (byte)(bqueue >>> (32 - 8));
+        }
         
-        return finalResult;
+        // Return properly sized result array
+        byte[] result = new byte[n];
+        System.arraycopy(output, 0, result, 0, n);
+        return result;
     }
 }
