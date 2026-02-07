@@ -38,12 +38,24 @@ public class Logfile
        new DateFormatSymbols(new Locale("no")));
     
         
-
+    public static class Dummy extends Logfile {
+      @Override public void _log(String txt) {}
+      @Override public void add(String txt) {}
+      public Dummy() {
+        super(null, "");
+      }
+    }
+    
+        
+        
     private void init(ServerConfig api, String configname, OutputStream logfile)
     {     
+       if (api==null)
+          return;
        try {
-         if (configname == null)
-            configname = "app";
+          if (configname == null)
+             configname = "app";
+          
           _log = api.getBoolProperty(configname + ".log.on", true);
           int lv = api.getIntProperty(configname + ".log.level", 1);
           
