@@ -31,7 +31,8 @@ import java.text.*;
 import java.util.concurrent.locks.*; 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.jsontype.NamedType;
-
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Abstract base class for REST API implementations, etc. 
@@ -239,9 +240,15 @@ public abstract class ServerBase
     }
    
    
-   protected String metaTag(String name, String val) 
-      { return "<meta name=\""+name+"\" value=\""+val+"\"/>"; }
+    protected String metaTag(String name, String val) 
+        { return "<meta name=\""+name+"\" value=\""+val+"\"/>"; }
+   
    
 
- 
+    protected String urlDecode(String coded) {
+        try {
+            return URLDecoder.decode(coded, "UTF-8");
+        }
+        catch (Exception e) {return null;}
+    }
 }
