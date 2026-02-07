@@ -76,7 +76,7 @@ public class Base91 {
         
         StringBuilder output = new StringBuilder();
         int nbits = 0;
-        int bqueue = 0;  // 32-bit queue matching C implementation
+        int bqueue = 0;  // 32-bit queue (matches C uint32_t); Java int is signed but operations use unsigned semantics
         
         for (byte b : input) {
             nbits += 8;
@@ -124,7 +124,7 @@ public class Base91 {
         int n = 0;
         int val = -1;
         int nbits = 0;
-        int bqueue = 0;  // 32-bit queue matching C implementation
+        int bqueue = 0;  // 32-bit queue (matches C uint32_t); Java int is signed but operations use unsigned semantics
         
         for (int i = 0; i < input.length(); i++) {
             char c = input.charAt(i);
