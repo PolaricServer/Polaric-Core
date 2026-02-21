@@ -43,3 +43,5 @@ Is work-in-progress. See the [Javadoc](https://sarhack.no/apidocs/polaric-core/)
 
 Contributions and feedback are welcome! It is still a bit work-in-progress. Interested? Stay tuned!
 
+<a href="https://www.buymeacoffee.com/la7eca" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-violet.png" alt="Buy Me A Coffee" style="height: 40px !important;width: 150px !important;" ></a>
+
