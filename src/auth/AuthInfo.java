@@ -240,14 +240,21 @@ public class AuthInfo {
      * where some authorizations depends on role/group membership. 
      */
     public void authorize(User u, Group grp) {
+        if (u==null) {
+            userid=null;
+            callsign=null;
+            admin = false; 
+            grp = null;
+            return;
+        }
         userid = u.getIdent();
         callsign = u.getCallsign();
+        admin = u.isAdmin();
+        
         if (grp == null) 
             grp = u.getGroup();
         groupid = grp.getIdent();
         tagsAuth = grp.getTags();
-            
-        admin = u.isAdmin();
         operator = grp.isOperator(); 
     }
     
