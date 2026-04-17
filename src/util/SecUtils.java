@@ -109,10 +109,10 @@ public class SecUtils
      * Compute a HMAC SHA256 from data and a key.
      * @return The hmac represented as a byte array.
      */
-    public final static byte[] hmac(String data, String key)
+    public final static byte[] hmac(String data, byte[] key)
     {
         try {
-            SecretKeySpec secretKeySpec = new SecretKeySpec(key.getBytes("UTF-8"), "HMAC_SHA256");
+            SecretKeySpec secretKeySpec = new SecretKeySpec(key, "HMAC_SHA256");
             Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(secretKeySpec);
             return mac.doFinal(data.getBytes("UTF-8"));
@@ -122,7 +122,27 @@ public class SecUtils
             return null;
         }
     }
-
+    
+    
+    /**
+     * Compute a HMAC SHA256 from data and a key.
+     * @return The hmac represented as a byte array.
+     * @deprecated base64 encoded string should be decoded to binary format.
+     *
+     * NOTE: key is a string, it is typically Base64 encoded. This is kept for compatibility.
+     * It should be decoded to binary format to ensure max entropy. Also consider using a KDF since some 
+     * keys may not be random. 
+     */
+    public final static byte[] hmac(String data, String key)
+    {   try {
+            return hmac(data, key.getBytes("UTF-8"));
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
+    
+    
 
         
     /**
@@ -140,13 +160,6 @@ public class SecUtils
     public final static String xDigestHex(String txt)
         {return b2hex(xDigest(null, txt));}
 
-        
-        
-    /**
-     * Compute a HMAC SHA256 from the text, represented as a hexadecimal string. 
-     */
-    public final static String hmacHex(String txt, String key)
-        {return b2hex(hmac(txt, key)); }
         
         
     /**
@@ -189,14 +202,30 @@ public class SecUtils
      * Returns n first characters of digest, encoded using
      * the Base 64 method.
      */
-    public final static String hmacB64(String txt, String key, int n)
+    public final static String hmacB64(String txt, byte[] key, int n)
     {
        String d = b64encode(hmac(txt, key));
        return d.substring(0,n); 
     }
     
+         
+    /**
+     * Base 64 encoded HMAC SHA256.
+     * @deprecated
+     */
+    public final static String hmacB64(String txt, String key, int n) {
+        try {
+            return hmacB64(txt, key.getBytes("UTF-8"), n);
+        }
+        catch (Exception e) {
+            return null;
+        }
+    }
      
      
+    /**
+     * Base 91 encoded HMAC SHA256.
+     */
     public final static String hmacB91(String txt, String key, int n)
     {
         String d = Base91.encode(hmac(txt, key));
@@ -271,6 +300,30 @@ public class SecUtils
      */
     public static String escape4regex(String x) {
         return x.replaceAll("([\\$\\^\\*\\+\\?\\.\\(\\)\\[\\]\\{\\}\\\\])", "\\\\$1");
+    }
+    
+    
+    
+    /**
+     * Generate a key from a low entropy secret like a password. 
+     */
+    public static SecretKey pbkdf2(String password, String salt, int iterations, String algorithm)
+        throws NoSuchAlgorithmException, InvalidKeySpecException {
+    
+        SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+        KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), iterations, 256);
+        SecretKey secret = new SecretKeySpec(factory.generateSecret(spec)
+            .getEncoded(), algorithm);
+        return secret;
+    }
+    
+    
+    /**
+     * Generate an AES256 key from a low entropy secret like a password. 
+     */
+    public static SecretKey pbkdf2_aes(String password, String salt, int iterations)
+        throws NoSuchAlgorithmException, InvalidKeySpecException {
+        return pbkdf2(password, salt, iterations, "AES");
     }
     
     
