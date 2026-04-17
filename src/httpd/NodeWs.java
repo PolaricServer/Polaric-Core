@@ -62,6 +62,7 @@ public class NodeWs extends WsNotifier
                 case "SUB":
                     nodeid = parms[1];
                     _subscribers.put(parms[1], this);
+                    if (_handler != null) _handler.subs(nodeid);
                     break;
                    
                  /* unsubscribe:

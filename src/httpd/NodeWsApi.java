@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2022-25 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
+ * Copyright (C) 2022-26 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -35,6 +35,7 @@ public class NodeWsApi<T> {
     
     public interface Handler<T> {
         public void recv(String nodeid, T obj);
+        public void subs(String nodeid);
     }
 
     
@@ -52,6 +53,11 @@ public class NodeWsApi<T> {
                 _conf.log().debug("NodeWsApi", "Received message from: "+nodeid);
                 if (_chandler != null)
                     _chandler.recv(nodeid, (T) ServerBase.fromJson(obj, _cls));
+            }
+            public void subs(String nodeid) {
+                _conf.log().debug("NodeWsApi", "Subscription from/to: "+nodeid);
+                if (_chandler != null)
+                    _chandler.subs(nodeid);
             }
         };
         
@@ -75,8 +81,8 @@ public class NodeWsApi<T> {
     
     public void addServer(String nodeid, NodeWsClient srv) {
         _servers.put(nodeid, srv);
-        srv.subscribe(_nodeid);
         srv.setHandler(_handler);
+        srv.subscribe(_nodeid);
     }
     
     

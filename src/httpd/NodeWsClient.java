@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2022-25 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
+ * Copyright (C) 2022-26 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -107,7 +107,12 @@ public class NodeWsClient implements WebSocket.Listener {
     
     public boolean subscribe(String nodeid) {
         _subscribe = nodeid;
-        return putCommand("SUBSCRIBE ", nodeid);
+        if (putCommand("SUBSCRIBE ", _subscribe)) {
+            if (_handler != null)
+                _handler.subs(_nodeid);
+            return true;
+        }
+        return false;
     }
     
     
