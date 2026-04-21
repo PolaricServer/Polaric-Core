@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2017-2025 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
+ * Copyright (C) 2017-2026 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -214,15 +214,15 @@ public class AuthService {
       Optional<CommonProfile> profile = AuthInfo.getSessionProfile(ctx); 
          
       String userid = profile.get().getId();
-      String key =  _hmac.getUserKey(userid); 
+      byte[] key =  _hmac.getUserKey(userid); 
       
       /* If key not found, generate a new one */
-      if (key == null)
-         key = SecUtils.b64encode(SecUtils.getRandom(48)); // Gives 64 bytes when encoded 
+      if (key == null || key.length > 33)
+         key = SecUtils.getRandom(32); 
       
       _hmac.setUserKey(userid, key);
       _log.log("Successful login from: "+ipAddr(ctx)+", userid="+ userid);
-      ctx.result(key);
+      ctx.result(SecUtils.b64encode(key));
     }
     
 

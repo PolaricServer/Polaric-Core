@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2017-2025 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
+ * Copyright (C) 2017-2026 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -46,7 +46,7 @@ public class HmacAuthenticator implements Authenticator {
     private static final long MAX_SESSION_LENGTH = 7 * 24 * 60 *60 * 1000;
     
         /* Keys given to users. username->key mapping */
-    private final Map<String, String> _keymap = new HashMap<String, String>();
+    private final Map<String, byte[]> _keymap = new HashMap<String, byte[]>();
     
         /* Devices (peer PS instances) with a key */
     private final Set<String> _devices = new HashSet<String> ();
@@ -76,7 +76,7 @@ public class HmacAuthenticator implements Authenticator {
     /**
      * Get session-key for a user
      */
-    public final String getUserKey(String userid) {
+    public final byte[] getUserKey(String userid) {
         return _keymap.get(userid);
     }
     
@@ -86,7 +86,7 @@ public class HmacAuthenticator implements Authenticator {
      * This is done when user successfully logs in. A timestamp is also set to be able
      * to expire the session. 
      */
-    public final void setUserKey(String userid, String key) {
+    public final void setUserKey(String userid, byte[] key) {
         _keymap.remove(userid);
         _keymap.put(userid, key);
         _userlogins.remove(userid);
@@ -123,7 +123,7 @@ public class HmacAuthenticator implements Authenticator {
                 if (ts==null)
                     ts = (new Date()).getTime();
                 if (!_devices.contains(k))
-                    wr.println(k+":"+v+":"+ts);
+                    wr.println(k+":" + SecUtils.b64encode(v) + ":"+ts);
             });
             wr.close();
             Path path = Paths.get(_ukeyfile); 
@@ -161,6 +161,24 @@ public class HmacAuthenticator implements Authenticator {
     
     
     
+    private static String DEVKEY_SALT = "*E^o2Zse@!_rQp:kL%{4qL.~!v[n&HS)";
+    private static int DEVKEY_ITER = 16384;
+    
+    
+    /* Use key derivation function to generate a key from a password type string */
+    private byte[] genKey(String key) {
+        try {
+            byte[] bkey = SecUtils.pbkdf2(key, DEVKEY_SALT, DEVKEY_ITER, "HmacSHA256").getEncoded();
+            return bkey;
+        }
+        catch (Exception e) {
+            _conf.log().warn("HmacAuthenticator", "Cannot derive key from password/phrase: "+e.getMessage());
+            return null;
+        }
+    }
+    
+    
+    
     /**
      * Load keys from file.
      */
@@ -177,7 +195,13 @@ public class HmacAuthenticator implements Authenticator {
                     {                 
                         String[] x = line.split(":");  
                         String userid = x[0].trim();
-                        String key = x[1].trim();
+                        String stkey = x[1].trim();
+                        byte[] key;
+                        if (dev) 
+                            key = genKey(stkey);
+                        else
+                            key = SecUtils.b64decode(stkey); 
+
                         _keymap.put(userid, key);
                         if (dev) 
                             _devices.add(userid);
@@ -271,6 +295,8 @@ public class HmacAuthenticator implements Authenticator {
     public final User checkAuth(String userid, String nonce, String rmac, String data) 
         throws CredentialsException
     {
+        _conf.log().debug("HmacAuthenticator", "checkAuth "+userid+", "+nonce);
+    
         if (_dup.contains(nonce)) 
             throwsException("Duplicate request");
 
@@ -280,7 +306,7 @@ public class HmacAuthenticator implements Authenticator {
 
         /* Get key from keymap.get(userid) */
         expireUserKey(userid);
-        String key = _keymap.get(userid);
+        byte[] key = _keymap.get(userid);
         if (key==null)
             throwsException("No key for user: "+userid+". Login needed");
 
@@ -301,7 +327,7 @@ public class HmacAuthenticator implements Authenticator {
      *  - hmac: Base64 encoded hmac-digest based on nonce+data and a secret key. Truncated to 44 characters. 
      */
     public final String authString(String body, String userid) {
-        String key = _keymap.get(userid);
+        byte[] key = _keymap.get(userid);
         if (key==null) {
             _conf.log().warn("HmacAuthenticator", "Key not found for user: "+userid);
             return "";
