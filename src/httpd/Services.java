@@ -19,7 +19,6 @@
 package no.polaric.core.httpd; 
 import no.polaric.core.*;
 import no.polaric.core.auth.*;
-import io.javalin.Javalin;
 import java.util.*;
 
 
@@ -67,7 +66,7 @@ public class Services extends ServerBase {
          * Get a list of groups. 
          ******************************************/
          
-        a.get("/groups",  ctx -> {
+        wServer().addRoutes(r -> r.get("/groups",  ctx -> {
             List<GroupInfo> gl = new ArrayList<GroupInfo>();
             var uid = getAuthInfo(ctx).userid; 
             User u = wServer().userDb().get(uid);
@@ -78,7 +77,7 @@ public class Services extends ServerBase {
             
             wServer().pubSub().createRoom("auth:"+uid, null);
             ctx.json(gl); 
-        });
+        }));
         
         
     }

@@ -21,9 +21,11 @@ import no.polaric.core.*;
 import no.polaric.core.auth.*;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
+import io.javalin.router.JavalinDefaultRoutingApi;
 import org.pac4j.core.config.Config;
 import org.pac4j.javalin.*;
 import java.util.*;
+import java.util.function.Consumer;
 
 
 /**
@@ -38,6 +40,8 @@ public abstract class WebServer implements ServerConfig.Web {
     private PubSub _psub;
     private String _psuri;
     protected ServerConfig _conf;
+    private String _stpath, _stdir;
+    private final List<Consumer<JavalinDefaultRoutingApi>> _routeContributors = new ArrayList<>();
     
     private long _nRequests = 0;
     
@@ -61,28 +65,28 @@ public abstract class WebServer implements ServerConfig.Web {
         _psuri = psuri.trim();
         if (_psuri.charAt(0) != '/')
             _psuri = "/" + _psuri;
-        
-        _app = Javalin.create( config -> {
-            _auth = new AuthService(conf);;
-    
-            /* Serve static files. */
-            if (stpath != null && stdir != null)
-                config.staticFiles.add( sf -> {
-                    sf.hostedPath = stpath;    
-                    sf.directory = stdir;   
-                    sf.location = Location.EXTERNAL;
-                });
-        }).start(_port);
+        _stpath = stpath;
+        _stdir = stdir;
+        _auth = new AuthService(conf);
     }
     
+    
+    
+    /**
+     * Register a route contributor to be applied during Javalin creation.
+     * Must be called before {@link #start()}.
+     */
+    public void addRoutes(Consumer<JavalinDefaultRoutingApi> contributor) {
+        _routeContributors.add(contributor);
+    }
     
     
     /**
      * Start the webserver and services. 
      */
     public void start() {
-        _auth.start(_app);
-        _app.after(ctx -> {_nRequests++;});
+        _auth.addRoutes(this);
+        addRoutes(r -> r.after(ctx -> { _nRequests++; }));
                 
         /* Basic REST service */
         Services ss = new Services(_conf);
@@ -94,6 +98,18 @@ public abstract class WebServer implements ServerConfig.Web {
          */
         _psub = new PubSub(_conf);
         _psub.start(_psuri);
+        
+        /* Create and start Javalin with all registered route contributors. */
+        _app = Javalin.create(config -> {
+            if (_stpath != null && _stdir != null)
+                config.staticFiles.add(sf -> {
+                    sf.hostedPath = _stpath;
+                    sf.directory = _stdir;
+                    sf.location = Location.EXTERNAL;
+                });
+            _routeContributors.forEach(c -> c.accept(config.routes));
+        }).start(_port);
+
         pubSub().createRoom("notify:SYSTEM", false, false, false, true, ServerConfig.Notification.class);
         pubSub().createRoom("notify:ADMIN", false, false, false, true, ServerConfig.Notification.class);
         
@@ -264,15 +280,17 @@ public abstract class WebServer implements ServerConfig.Web {
     public void protectUrl(String prefix, String level) {  
         var cli = "HeaderClient"; 
         String lvl = (level==null ? "isuser" : level);
-        app().before(prefix, new SecurityHandler(_auth.conf(), cli, lvl)); 
-        app().before(prefix, AuthService::getAuthInfo);
+        addRoutes(r -> {
+            r.before(prefix, new SecurityHandler(_auth.conf(), cli, lvl));
+            r.before(prefix, AuthService::getAuthInfo);
+        });
     }
     
     
     
     public void protectDeviceUrl(String prefix) {
         var cli = "HeaderClient"; 
-        app().before(prefix, new SecurityHandler(_auth.conf(), cli, "device")); 
+        addRoutes(r -> r.before(prefix, new SecurityHandler(_auth.conf(), cli, "device")));
     }
     
 }
