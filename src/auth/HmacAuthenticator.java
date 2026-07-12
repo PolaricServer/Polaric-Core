@@ -198,8 +198,10 @@ public class HmacAuthenticator implements Authenticator {
                         String stkey = x[1].trim();
                         byte[] key;
                         if (dev) 
+                            /* Device keys can be anything, so they are run through a key derivation function (PBKDF2) */
                             key = genKey(stkey);
                         else
+                            /* User keys are assumed to be random, fixed size and base64 encoded */
                             key = SecUtils.b64decode(stkey); 
 
                         _keymap.put(userid, key);
@@ -295,14 +297,17 @@ public class HmacAuthenticator implements Authenticator {
     public final User checkAuth(String userid, String nonce, String rmac, String data) 
         throws CredentialsException
     {
-        _conf.log().debug("HmacAuthenticator", "checkAuth "+userid+", "+nonce);
-    
         if (_dup.contains(nonce)) 
             throwsException("Duplicate request");
 
         User ui = _users.get(userid);
-        if (ui==null && !_devices.contains(userid))
-            throwsException("Unknown userid: "+userid);
+        
+        if (ui==null) {
+            if (!_devices.contains(userid))
+                throwsException("Unknown userid: "+userid);
+            ui = new Device(userid);
+            // User is a device */
+        }
 
         /* Get key from keymap.get(userid) */
         expireUserKey(userid);

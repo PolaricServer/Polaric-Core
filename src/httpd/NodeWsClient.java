@@ -54,7 +54,6 @@ public class NodeWsClient implements WebSocket.Listener {
         try {
             _url=new URI(url);
             _ht = HttpClient.newHttpClient();
-            open();
         }
         catch (URISyntaxException e) {
             _conf.log().error("NodeWsClient", "Syntax error in URI: "+_url);
@@ -79,9 +78,10 @@ public class NodeWsClient implements WebSocket.Listener {
         try {
             HmacAuthenticator auth = ((WebServer)_conf.getWebserver()).authService().hmacAuth();
             URI u = new URI(_url.toString() + "?" + auth.authString("", _userid)); 
+            _conf.log().debug("NodeWsClient", "Open connection: " + u);
             _wsClient = _ht.newWebSocketBuilder()
                 .connectTimeout(Duration.ofSeconds(20))
-                .buildAsync(_url, this)
+                .buildAsync(u, this)
                 .get();
         }
         catch (Exception e) {
@@ -154,7 +154,7 @@ public class NodeWsClient implements WebSocket.Listener {
         
     
     @Override
-   public void onError​(WebSocket webSocket, Throwable error) {
+    public void onError​(WebSocket webSocket, Throwable error) {
         _conf.log().warn("NodeWsClient", "Error: "+error);
         error.printStackTrace(System.out);
         _connected = false;

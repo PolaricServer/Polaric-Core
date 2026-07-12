@@ -60,12 +60,13 @@ public class NodeWs extends WsNotifier
                  */
                 case "SUBSCRIBE":
                 case "SUB":
+                    // We may do additional identification and authorization here, based on the nodeid
                     nodeid = parms[1];
-                    _subscribers.put(parms[1], this);
+                    _subscribers.put(nodeid, this);
                     if (_handler != null) _handler.subs(nodeid);
                     break;
                    
-                 /* unsubscribe:
+                /* unsubscribe:
                  * arguments: ident
                  */
                 case "UNSUBSCRIBE":
@@ -121,7 +122,19 @@ public class NodeWs extends WsNotifier
     }
     
    
-    
+    /**
+     * Subscribe a client to the service. Should be overridden in subclass.
+     * This may include authorization, preferences, etc.. 
+     * @return true if subscription is accepted. False if rejected.
+     */
+    @Override protected boolean subscribe(WsContext ctx, WsNotifier.Client client) { 
+        if (client.login())
+            return true;
+        else
+            return false; 
+    }
+        
+        
     
     /** 
       * Post a message to node. Returns true if sending was successful.
@@ -141,6 +154,8 @@ public class NodeWs extends WsNotifier
             client.send("POST " + msg);
         return true;
     }
+        
+        
         
             
     /** Post a object to a node (JSON encoded) */

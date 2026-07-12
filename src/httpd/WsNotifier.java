@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2025 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
+ * Copyright (C) 2025-2026 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -162,7 +162,11 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
     */
    public AuthInfo authenticate(String qstring) {
       String[] params = null; 
-      if (qstring != null) {
+      if (qstring == null) {
+            _conf.log().info("WsNotifier", "Authentication failed, no authentication string");
+            return null;
+      }
+      else {
          params = qstring.split(";");
          if (params.length < 3 || params.length > 4) {
             _conf.log().info("WsNotifier", "Authentication failed, wrong format of query string");
@@ -174,9 +178,12 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
          String rname = (params.length == 4 ? params[3] : null);
          User ui = auth.checkAuth(params[0], params[1], params[2], "");
          Group grp = auth.getRole(ui, rname);
+         _conf.log().debug("WsNotifier", "Authentication sucess: "+ui.getIdent());
          return new AuthInfo(_conf, ui, grp); 
       }
-      catch (Exception e) {}
+      catch (Exception e) {
+         _conf.log().info("WsNotifier", "Authentication failed: "+e.getMessage());
+      }
       return null;
    }
    
@@ -189,7 +196,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
             return;
         Client c = _clients.get(ctx);
         if (c==null) {
-            _conf.log().warn("WsNotifier", "Close session: client "+sesId(ctx)+" not found");
+            _conf.log().debug("WsNotifier", "Close session: client "+sesId(ctx)+" not found");
             return;
         }
         _conf.log().debug("WsNotifier", "Close session: "+sesId(ctx)+" ok");
@@ -213,7 +220,6 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
     private void openSes(WsContext ctx) {
         try {
             String qstring = ctx.queryString();
-            _conf.log().debug("WsNotifier", "Open session - query string: "+qstring);
           
             /* Check origin */
             _origin = ctx.header("Origin");
@@ -340,6 +346,8 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
             
             ws.onMessage(ctx -> {
                 Client c = _clients.get(ctx);    
+                if (c==null)
+                    return;
                 c._nIn++;
                 c.handleTextFrame(ctx.message());
             });
