@@ -19,7 +19,6 @@
 package no.polaric.core.httpd;
 import no.polaric.core.*;
 import no.polaric.core.auth.*;
-import io.javalin.Javalin;
 import io.javalin.http.Context;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -46,7 +45,6 @@ public abstract class ServerBase
    private    String         _wfiledir;
    private    String         _icon;    
    private    WebServer      _ws;
-   protected  Javalin        a; 
    
    public static final String _encoding = "UTF-8";
 
@@ -112,7 +110,6 @@ public abstract class ServerBase
     {
         _conf = conf; 
         _ws = (WebServer) conf.getWebserver(); 
-        a = _ws.app();
       
         _wfiledir    = conf.getProperty("map.web.dir", "aprsd");
         _icon        = conf.getProperty("map.icon.default", "sym.gif");
