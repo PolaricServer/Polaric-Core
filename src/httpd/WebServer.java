@@ -99,6 +99,13 @@ public abstract class WebServer implements ServerConfig.Web {
         _psub = new PubSub(_conf);
         _psub.start(_psuri);
         
+        /* 
+         * Hook for subclasses to register application routes before the Javalin app
+         * is created.  Override {@link #setupRoutes()} instead of registering routes
+         * after {@code super.start()} — routes added after Javalin.create() are ignored.
+         */
+        setupRoutes();
+        
         /* Create and start Javalin with all registered route contributors. */
         _app = Javalin.create(config -> {
             if (_stpath != null && _stdir != null)
@@ -119,6 +126,16 @@ public abstract class WebServer implements ServerConfig.Web {
          */
         AuthInfo.init(_conf, _psub);
     }
+    
+    
+    /**
+     * Hook called by {@link #start()} immediately before the Javalin application is
+     * created.  Subclasses should override this method to register all application-level
+     * HTTP routes (via {@code a.get(...)}, {@code a.post(...)}, etc.) and any
+     * additional route contributors.  Do <em>not</em> register routes after
+     * {@code super.start()} returns — they will be silently ignored.
+     */
+    protected void setupRoutes() {}
     
     
     /** Stop the webserver and services */

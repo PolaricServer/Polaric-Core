@@ -20,6 +20,7 @@ package no.polaric.core.httpd;
 import no.polaric.core.*;
 import no.polaric.core.auth.*;
 import io.javalin.http.Context;
+import io.javalin.http.Handler;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.io.PrintStream;
@@ -45,6 +46,42 @@ public abstract class ServerBase
    private    String         _wfiledir;
    private    String         _icon;    
    private    WebServer      _ws;
+   
+   
+   /**
+    * Route-registration helper. Provides HTTP-method shorthands that delegate to
+    * {@link WebServer#addRoutes(java.util.function.Consumer) addRoutes()}.
+    * Assign to the protected field {@code a} so that subclasses (and external
+    * REST-API classes) can write {@code a.get("/path", handler)}.
+    * <p>
+    * All registrations must happen before the Javalin app is created.  The
+    * recommended place is an override of {@link WebServer#setupRoutes()}.
+    */
+   public class RouteAdder {
+   
+       public void get(String path, Handler handler) {
+           wServer().addRoutes(r -> r.get(path, handler));
+       }
+       
+       public void post(String path, Handler handler) {
+           wServer().addRoutes(r -> r.post(path, handler));
+       }
+       
+       public void put(String path, Handler handler) {
+           wServer().addRoutes(r -> r.put(path, handler));
+       }
+       
+       public void delete(String path, Handler handler) {
+           wServer().addRoutes(r -> r.delete(path, handler));
+       }
+       
+       public void patch(String path, Handler handler) {
+           wServer().addRoutes(r -> r.patch(path, handler));
+       }
+   }
+   
+   /** Route-registration shorthand.  Subclasses use {@code a.get("/path", handler)} etc. */
+   protected RouteAdder a;
    
    public static final String _encoding = "UTF-8";
 
@@ -110,6 +147,7 @@ public abstract class ServerBase
     {
         _conf = conf; 
         _ws = (WebServer) conf.getWebserver(); 
+        a = new RouteAdder();
       
         _wfiledir    = conf.getProperty("map.web.dir", "aprsd");
         _icon        = conf.getProperty("map.icon.default", "sym.gif");
