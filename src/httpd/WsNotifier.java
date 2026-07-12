@@ -19,7 +19,6 @@
 package no.polaric.core.httpd; 
 import no.polaric.core.*;
 import no.polaric.core.auth.*;
-import io.javalin.Javalin;
 import java.util.*;
 import java.util.concurrent.*;
 import io.javalin.websocket.*; 
@@ -109,8 +108,8 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
     private String _trustedOrigin; 
    
    
-    /* Client sessions */
-    protected final Map<WsContext, Client> _clients = new ConcurrentHashMap<>();
+    /* Client sessions: keyed by session ID */
+    protected final Map<String, Client> _clients = new ConcurrentHashMap<>();
      
      /* Callbacks for open and close of sessions */
     private List<SHandler> _sOpen = new ArrayList<SHandler>();
@@ -194,7 +193,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
     protected void closeSes(WsContext ctx) {
         if (ctx==null)
             return;
-        Client c = _clients.get(ctx);
+        Client c = _clients.get(ctx.sessionId());
         if (c==null) {
             _conf.log().debug("WsNotifier", "Close session: client "+sesId(ctx)+" not found");
             return;
@@ -202,7 +201,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
         _conf.log().debug("WsNotifier", "Close session: "+sesId(ctx)+" ok");
         if (c.login())
             _nLoggedIn--;
-        _clients.remove(ctx);
+        _clients.remove(ctx.sessionId());
         
         /* Call any functions that are registered for handling this */
         for (SHandler h : _sClose)
@@ -239,7 +238,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
                  
                 if (subscribe(ctx, client)) {
                     _conf.log().debug("WsNotifier", "Open session accepted: "+sesId(ctx));
-                    _clients.put(ctx, client); 
+                    _clients.put(ctx.sessionId(), client); 
                     _visits++;
                  
                     /* Call any functions that are registered for handling this */
@@ -303,8 +302,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
     public void postText(Function<Client,String> txt, Predicate<Client> pred) {
        try {          
           /* Distribute to all clients */
-          for(WsContext ctx : _clients.keySet()) {
-              Client client = (Client) _clients.get(ctx);      
+          for(Client client : _clients.values()) {
               if (client != null && pred.test(client) && txt != null) 
                  client.send(txt.apply(client));
           }
@@ -334,10 +332,10 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
     }
    
    
-    /** Start the websocket service */
+    /** Register the websocket service route. Must be called before the WebServer is started. */
     public void start(String uri) {    
         
-        a.ws(uri, ws -> {
+        wServer().addRoutes(routes -> routes.ws(uri, ws -> {
             ws.onConnect(ctx -> {
                 _conf.log().debug("WsNotifier", "Websocket connection: "+sesId(ctx));
                 ctx.enableAutomaticPings();
@@ -345,7 +343,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
             });
             
             ws.onMessage(ctx -> {
-                Client c = _clients.get(ctx);    
+                Client c = _clients.get(ctx.sessionId());    
                 if (c==null)
                     return;
                 c._nIn++;
@@ -363,7 +361,7 @@ public abstract class WsNotifier extends ServerBase implements SesNotifier {
             ws.onError(ctx -> {
                 _conf.log().warn("WsNotifier", "onError: "+sesId(ctx)+", "+ctx.error());
             });
-        });
+        }));
     }
     
     

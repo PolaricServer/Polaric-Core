@@ -20,8 +20,8 @@ package no.polaric.core.auth;
 import no.polaric.core.*;
 import no.polaric.core.httpd.*;
 import no.polaric.core.util.*;
-import io.javalin.Javalin;
 import io.javalin.http.Context;
+import io.javalin.http.HandlerType;
 import io.javalin.json.*; 
 import org.pac4j.core.context.WebContext;
 import org.pac4j.core.config.Config;
@@ -103,17 +103,17 @@ public class AuthService {
        
 
        
-    /** Set up the services. */
-    public void start(Javalin a) {
-      
+    /** Set up the services by registering route contributions on the given WebServer. */
+    public void addRoutes(WebServer ws) {
+      ws.addRoutes(routes -> {
       /* 
        * OPTIONS requests (CORS preflight) are not sent with cookies and should not go 
        * through the auth check. 
        * Maybe we do this only for REST APIs and return info more exactly what options
        * are available? Move it inside the corsEnable method? 
        */
-      a.before("*", ctx -> {
-            if (ctx.method().name() == "OPTIONS") {
+      routes.before(ctx -> {
+            if ("OPTIONS".equals(ctx.method().name())) {
                 corsHeaders(ctx); 
                 ctx.status(200);
                 ctx.skipRemainingHandlers();
@@ -121,15 +121,15 @@ public class AuthService {
         });
         
       /* Set CORS headers. */
-      a.before ("*", ctx -> { corsHeaders(ctx); } ); 
+      routes.before(ctx -> { corsHeaders(ctx); } ); 
               
       /* Login with username and password */
-      a.before("/directLogin", new SecurityHandler(_authConf, "DirectFormClient")); 
+      routes.before("/directLogin", new SecurityHandler(_authConf, "DirectFormClient")); 
               
       /* SHA256 Hash of body */
-      a.before("*", AuthService::genBodyDigest);
+      routes.before(AuthService::genBodyDigest);
       
-      a.before("/authStatus",  new SecurityHandler(_authConf, "HeaderClient"));
+      routes.before("/authStatus",  new SecurityHandler(_authConf, "HeaderClient"));
 
 
        /* 
@@ -137,13 +137,13 @@ public class AuthService {
         * user-profiles between requests. IF we use direct clients (stateless server) 
         * this will not work for paths without authenticators!! 
         */
-      a.before("/hmacTest",   AuthService::getAuthInfo);
-      a.before("/authStatus", AuthService::getAuthInfo);
+      routes.before("/hmacTest",   AuthService::getAuthInfo);
+      routes.before("/authStatus", AuthService::getAuthInfo);
 
-      a.post("/directLogin", ctx -> { directLogin(ctx); });   // Indicate login success
-      a.get("/authStatus",   AuthService::authStatus);        // Return authorisation status
-      a.get("/authStatus2",  AuthService::authStatus);        // Return authorisation status without authentication
-
+      routes.post("/directLogin", ctx -> { directLogin(ctx); });   // Indicate login success
+      routes.get("/authStatus",   AuthService::authStatus);        // Return authorisation status
+      routes.get("/authStatus2",  AuthService::authStatus);        // Return authorisation status without authentication
+      });
     }
     
 
