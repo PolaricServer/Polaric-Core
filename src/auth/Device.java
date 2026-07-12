@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2025-2026 by LA7ECA, Øyvind Hanssen (ohanssen@acm.org)
+ * Copyright (C) 2026 by Øyvind Hanssen (ohanssen@acm.org)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -14,31 +14,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
+ 
 package no.polaric.core.auth;
-import java.util.Date;
+import no.polaric.core.*; 
+import java.util.*; 
 
 
-/**
- * Minimal {@link User} implementation for authenticated devices (IoT / peer
- * Polaric instances).  Devices authenticate via Arctic-HMAC but have no
- * persistent user record, so most user-management operations are no-ops.
- */
+
+    
 public class Device extends User {
+ 
+    private Date lastused; 
 
-    public Device(String id) {
-        super(id);
+    /* We don't need these */
+    @Override public Date getLastUsed()        { return lastused; }
+    @Override public void setLastUsed(Date d)  { lastused = d;}
+    @Override public void setPasswd(String pw) {  }
+    
+    @Override public void updateTime() { 
+        lastused = new Date(); 
     }
-
-    @Override
-    public Date getLastUsed() { return null; }
-
-    @Override
-    public void setLastUsed(Date d) {}
-
-    @Override
-    public void updateTime() {}
-
-    @Override
-    public void setPasswd(String pw) {}
+    
+    public Device(String id) {
+        super(id); 
+        updateTime();
+    } 
+        
 }
