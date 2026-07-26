@@ -133,6 +133,7 @@ public class SecUtils
      * It should be decoded to binary format to ensure max entropy. Also consider using a KDF since some 
      * keys may not be random. 
      */
+    @Deprecated
     public final static byte[] hmac(String data, String key)
     {   try {
             return hmac(data, key.getBytes("UTF-8"));
@@ -213,6 +214,7 @@ public class SecUtils
      * Base 64 encoded HMAC SHA256.
      * @deprecated
      */
+    @Deprecated 
     public final static String hmacB64(String txt, String key, int n) {
         try {
             return hmacB64(txt, key.getBytes("UTF-8"), n);
