@@ -76,7 +76,7 @@
     <dependency>
       <groupId>org.pac4j</groupId>
       <artifactId>pac4j-http</artifactId>
-      <version>6.5.5</version>
+      <version>6.5.8</version>
     </dependency>
     <dependency>
       <groupId>org.pac4j</groupId>
