@@ -32,7 +32,7 @@ public class ZeroConf
 
     private List<JmDNS> _ifaces  = new ArrayList<JmDNS>();;
     
-    public ZeroConf()
+    public ZeroConf(String domain)
     {
         try {
             Enumeration<NetworkInterface> b = NetworkInterface.getNetworkInterfaces();
@@ -45,7 +45,7 @@ public class ZeroConf
                 for ( InterfaceAddress f : nif.getInterfaceAddresses()) {
                     InetAddress addr = f.getAddress();
                     if ( addr.isSiteLocalAddress() && !addr.isMulticastAddress() && !addr.isLinkLocalAddress() ) {
-                        JmDNS dd = JmDNS.create(addr);
+                        JmDNS dd = JmDNS.create(addr, domain);
                         _ifaces.add(dd);
                     }
                 }
@@ -55,6 +55,9 @@ public class ZeroConf
         }
     }
     
+    public ZeroConf() {
+        this(null);
+    }
     
     public void registerMdns(String type, String name, int port, String attrs) 
     {
