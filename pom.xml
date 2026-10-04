@@ -71,7 +71,7 @@
     <dependency>
       <groupId>org.pac4j</groupId>
       <artifactId>pac4j-core</artifactId>
-      <version>6.5.5</version>
+      <version>6.5.9</version>
     </dependency>
     <dependency>
       <groupId>org.pac4j</groupId>
