@@ -81,7 +81,7 @@
     <dependency>
       <groupId>org.pac4j</groupId>
       <artifactId>pac4j-oauth</artifactId>
-      <version>6.5.5</version>
+      <version>6.5.9</version>
     </dependency>
     <dependency>
       <groupId>net.cinnom</groupId>
