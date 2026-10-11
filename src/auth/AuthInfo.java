@@ -120,6 +120,9 @@ public class AuthInfo {
     
     public static void init(ServerConfig conf, SesNotifier ws) {
 
+        if (ws == null)
+            return;
+            
         /*
          * Called when a client session is opened. 
          * Typically a websocket session.  

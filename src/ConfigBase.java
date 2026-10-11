@@ -26,7 +26,7 @@ import java.util.*;
 
 public abstract class ConfigBase implements ServerConfig {
 
-    private Properties _config =new Properties();
+    private Properties _config = new Properties();
     private Logfile _log = new Logfile(this, null);
 
         

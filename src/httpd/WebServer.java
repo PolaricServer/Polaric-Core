@@ -37,13 +37,15 @@ public abstract class WebServer implements ServerConfig.Web {
     protected int _port;
     private Javalin _app; 
     private AuthService _auth;
-    private PubSub _psub;
+    private PubSub _psub = null;
     private String _psuri;
     protected ServerConfig _conf;
     private String _stpath, _stdir;
     private final List<Consumer<JavalinDefaultRoutingApi>> _routeContributors = new ArrayList<>();
     
     private long _nRequests = 0;
+    
+    private boolean _disableUserLogin = false;
     
     
     public static class UserSessionInfo extends AuthInfo.UserSessionInfo {
@@ -67,9 +69,12 @@ public abstract class WebServer implements ServerConfig.Web {
             _psuri = "/" + _psuri;
         _stpath = stpath;
         _stdir = stdir;
-        _auth = new AuthService(conf);
     }
     
+    
+    public void disableUserLogin() {
+        _disableUserLogin = true;
+    }
     
     
     /**
@@ -85,6 +90,9 @@ public abstract class WebServer implements ServerConfig.Web {
      * Start the webserver and services. 
      */
     public void start() {
+        
+        _auth = new AuthService(_conf, _disableUserLogin);
+        
         _auth.addRoutes(this);
         addRoutes(r -> r.after(ctx -> { _nRequests++; }));
                 
@@ -96,8 +104,10 @@ public abstract class WebServer implements ServerConfig.Web {
          * Publish-subscribe service based on websocket. Two rooms for notifications 
          * are created by default: SYSTEM and ADMIN 
          */
-        _psub = new PubSub(_conf);
-        _psub.start(_psuri);
+        if ( !_disableUserLogin ) {
+            _psub = new PubSub(_conf);
+            _psub.start(_psuri);
+        }
         
         /* 
          * Hook for subclasses to register application routes before the Javalin app
@@ -117,8 +127,10 @@ public abstract class WebServer implements ServerConfig.Web {
             _routeContributors.forEach(c -> c.accept(config.routes));
         }).start(_port);
 
-        pubSub().createRoom("notify:SYSTEM", false, false, false, true, ServerConfig.Notification.class);
-        pubSub().createRoom("notify:ADMIN", false, false, false, true, ServerConfig.Notification.class);
+        if ( !_disableUserLogin ) {
+            pubSub().createRoom("notify:SYSTEM", false, false, false, true, ServerConfig.Notification.class);
+            pubSub().createRoom("notify:ADMIN", false, false, false, true, ServerConfig.Notification.class);
+        }
         
         /* Register handlers for open and close of login-sessions. Note that there may be 
          * more than one login-session per user-session, but we need to ensure that there is only 
@@ -126,6 +138,7 @@ public abstract class WebServer implements ServerConfig.Web {
          */
         AuthInfo.init(_conf, _psub);
     }
+    
     
     
     /**

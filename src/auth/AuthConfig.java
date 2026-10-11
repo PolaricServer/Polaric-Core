@@ -77,13 +77,14 @@ public class AuthConfig implements ConfigFactory {
 
         /* Direct HMAC Auth client */         
         final HeaderClient hdrClient = new HeaderClient("Authorization", "Arctic-Hmac", _hmac);
+        
         /* Direct Form Auth client (for username/password) */
-        final DirectFormClient dformClient = new DirectFormClient(_passwds);
+        final DirectFormClient dformClient = (_passwds!= null ? new DirectFormClient(_passwds) : null);
         
         
-        Clients clients = new Clients(
-            hdrClient,
-            dformClient
+        Clients clients = ( _passwds == null ? 
+            new Clients(hdrClient) : 
+            new Clients(hdrClient, dformClient)
         );
 
         

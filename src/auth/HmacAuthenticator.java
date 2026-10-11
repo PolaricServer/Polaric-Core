@@ -69,7 +69,8 @@ public class HmacAuthenticator implements Authenticator {
         _ukeyfile = ufile;
         _users = lu;
         loadDevices();
-        loadLogins();
+        if (ufile != null)
+            loadLogins();
     }
        
        
@@ -300,7 +301,9 @@ public class HmacAuthenticator implements Authenticator {
         if (_dup.contains(nonce)) 
             throwsException("Duplicate request");
 
-        User ui = _users.get(userid);
+        User ui = null;
+        if (_users != null)
+            ui = _users.get(userid);
         
         if (ui==null) {
             if (!_devices.contains(userid))

@@ -51,7 +51,8 @@ public class AuthService {
     private LocalUsers _users; 
     private PasswordFileAuthenticator _passwds;
     private HmacAuthenticator _hmac;
-   
+    private boolean _disableLogin = false;
+    
    
     /* 
      * Jackson JSON mapper ..
@@ -69,23 +70,33 @@ public class AuthService {
     }
     
     
-    public AuthService(ServerConfig conf) {
+    public AuthService(ServerConfig conf, boolean disableLogin) {
        _conf = conf; 
-       _log = new Logfile(conf, "auth", "auth.log");        
-       _allowOrigin = conf.getProperty("httpserver.alloworigin", ".*");
-       _userFile    = conf.getProperty("httpserver.userfile",    "/var/lib/polaric/users.dat");
-       _groupFile   = conf.getProperty("httpserver.groupfile",   "/etc/polaric-aprsd/groups");
-       _passwdFile  = conf.getProperty("httpserver.passwdfile",  "/etc/polaric-aprsd/passwd");
-       _dkeyFile    = conf.getProperty("httpserver.keyfile",     "/etc/polaric-aprsd/keys/peers");
-       _ukeyFile    = conf.getProperty("httpserver.loginkeyfile","/var/lib/polaric/logins.dat");
+       _disableLogin = disableLogin;
        
-       _groups = new LocalGroups(conf, _groupFile);
-       _users = new LocalUsers(conf, _userFile, _groups, this);
-       _passwds = new PasswordFileAuthenticator(conf, _passwdFile, _users);
+       _log = new Logfile(conf, "auth", "auth.log");        
+        _allowOrigin = conf.getProperty("httpserver.alloworigin", ".*");
+        _dkeyFile    = conf.getProperty("httpserver.keyfile",     "/etc/polaric-aprsd/keys/peers");
+        
+        if (!disableLogin) {
+           _userFile    = conf.getProperty("httpserver.userfile",    "/var/lib/polaric/users.dat");
+           _groupFile   = conf.getProperty("httpserver.groupfile",   "/etc/polaric-aprsd/groups");
+           _passwdFile  = conf.getProperty("httpserver.passwdfile",  "/etc/polaric-aprsd/passwd");
+           _ukeyFile    = conf.getProperty("httpserver.loginkeyfile","/var/lib/polaric/logins.dat");
+           _groups = new LocalGroups(conf, _groupFile);
+           _users = new LocalUsers(conf, _userFile, _groups, this);
+           _passwds = new PasswordFileAuthenticator(conf, _passwdFile, _users);
+       }
+       
+
        _hmac = new HmacAuthenticator(conf, _dkeyFile, _ukeyFile, _users);
        _authConf = new AuthConfig(_passwds, _hmac).build();
     }
    
+   
+    public AuthService(ServerConfig conf) {
+      this(conf, false);
+    }
    
    
     /** Return the configuration */
@@ -98,7 +109,8 @@ public class AuthService {
        
        
     public void reloadPasswds() {
-      _passwds.load();
+      if (_passwds != null)
+        _passwds.load();
     }
        
 
@@ -123,8 +135,9 @@ public class AuthService {
       /* Set CORS headers. */
       routes.before(ctx -> { corsHeaders(ctx); } ); 
               
-      /* Login with username and password */
-      routes.before("/directLogin", new SecurityHandler(_authConf, "DirectFormClient")); 
+      if (!_disableLogin)
+        /* Login with username and password */
+        routes.before("/directLogin", new SecurityHandler(_authConf, "DirectFormClient")); 
               
       /* SHA256 Hash of body */
       routes.before(AuthService::genBodyDigest);
@@ -139,8 +152,10 @@ public class AuthService {
         */
       routes.before("/hmacTest",   AuthService::getAuthInfo);
       routes.before("/authStatus", AuthService::getAuthInfo);
-
-      routes.post("/directLogin", ctx -> { directLogin(ctx); });   // Indicate login success
+      
+      if (!_disableLogin)
+        routes.post("/directLogin", ctx -> { directLogin(ctx); });   // Indicate login success
+      
       routes.get("/authStatus",   AuthService::authStatus);        // Return authorisation status
       routes.get("/authStatus2",  AuthService::authStatus);        // Return authorisation status without authentication
       });
@@ -211,6 +226,10 @@ public class AuthService {
      * enviroments. 
      */
     public void directLogin(Context ctx) {
+      
+      if (!_disableLogin)
+        return;
+        
       Optional<CommonProfile> profile = AuthInfo.getSessionProfile(ctx); 
          
       String userid = profile.get().getId();
