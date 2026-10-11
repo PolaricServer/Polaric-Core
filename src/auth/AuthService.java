@@ -74,12 +74,11 @@ public class AuthService {
        _conf = conf; 
        _disableLogin = disableLogin;
        
-       _log = new Logfile(conf, "auth", "auth.log");        
         _allowOrigin = conf.getProperty("httpserver.alloworigin", ".*");
         _dkeyFile    = conf.getProperty("httpserver.keyfile",     "/etc/polaric-aprsd/keys/peers");
         
         if (!disableLogin) {
-           _log         = conf.getProperty("httpserver.authlogfile", "/var/log/polaric/auth.log");
+           _log         = new Logfile(conf, conf.getProperty("httpserver.authlogfile", "/var/log/polaric/auth.log"));
            _userFile    = conf.getProperty("httpserver.userfile",    "/var/lib/polaric/users.dat");
            _groupFile   = conf.getProperty("httpserver.groupfile",   "/etc/polaric-aprsd/groups");
            _passwdFile  = conf.getProperty("httpserver.passwdfile",  "/etc/polaric-aprsd/passwd");
