@@ -81,8 +81,7 @@ public class Logfile
     {     
        try {
          init(api, configname,
-            new FileOutputStream(  
-              System.getProperties().getProperty("logdir", ".")+"/"+logfile , true));
+            new FileOutputStream(logfile , true));
        }
        catch (Exception e) { System.out.println("ERROR (Logfile): "+e); 
                              _log = false; }

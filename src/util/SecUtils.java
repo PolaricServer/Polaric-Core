@@ -129,7 +129,7 @@ public class SecUtils
      * @return The hmac represented as a byte array.
      * @deprecated base64 encoded string should be decoded to binary format.
      *
-     * NOTE: key is a string, it is typically Base64 encoded. This is kept for compatibility.
+     * NOTE: key is a string, it may be Base64 encoded. This is kept for compatibility.
      * It should be decoded to binary format to ensure max entropy. Also consider using a KDF since some 
      * keys may not be random. 
      */
