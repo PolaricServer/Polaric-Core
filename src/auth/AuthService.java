@@ -79,6 +79,7 @@ public class AuthService {
         _dkeyFile    = conf.getProperty("httpserver.keyfile",     "/etc/polaric-aprsd/keys/peers");
         
         if (!disableLogin) {
+           _log         = conf.getProperty("httpserver.authlogfile", "/var/log/polaric/auth.log");
            _userFile    = conf.getProperty("httpserver.userfile",    "/var/lib/polaric/users.dat");
            _groupFile   = conf.getProperty("httpserver.groupfile",   "/etc/polaric-aprsd/groups");
            _passwdFile  = conf.getProperty("httpserver.passwdfile",  "/etc/polaric-aprsd/passwd");
@@ -154,7 +155,7 @@ public class AuthService {
       routes.before("/authStatus", AuthService::getAuthInfo);
       
       if (!_disableLogin)
-        routes.post("/directLogin", ctx -> { directLogin(ctx); });   // Indicate login success
+        routes.post("/directLogin", ctx -> { directLogin(ctx); }); // Indicate login success
       
       routes.get("/authStatus",   AuthService::authStatus);        // Return authorisation status
       routes.get("/authStatus2",  AuthService::authStatus);        // Return authorisation status without authentication
