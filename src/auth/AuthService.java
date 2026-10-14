@@ -227,7 +227,7 @@ public class AuthService {
      */
     public void directLogin(Context ctx) {
       
-      if (!_disableLogin)
+      if (_disableLogin)
         return;
         
       Optional<CommonProfile> profile = AuthInfo.getSessionProfile(ctx); 
